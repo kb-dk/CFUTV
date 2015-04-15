@@ -15,7 +15,7 @@
     <!-- Download destination, target a directory not a file -->
     <Parameter name="download_destination" value="/home/cfutv/download/"/>
     <!-- Which channels to search. Separate with comma -->
-    <Parameter name="allowed_channels" value="dr1,dr2,drk,drram,drultra,tv2d,tv2l,tv2oj,tv2s,tv2z,tv2news,tv3,kanal4,dk4,kanal5,tvfyn,tv2ost,tv2n,tv2mv,tv2born,mtv,svt1,svt2,nrk1,animal,discov,natgeo,bbce,bbcw,zdf,ard,3sat,arte,rtl,tv5mon,bbck"/>
+    <Parameter name="allowed_channels" value="dr1,dr2,drk,drram,drultra,tv2d,tv2l,tv2oj,tv2s,tv2z,tv2news,tv3,kanal4,dk4,kanal5,tvfyn,tv2ost,tv2n,tv2mv,tv2born,mtv,svt1,svt2,nrk1,animal,discov,natgeo,bbce,bbcw,zdf,ard,3sat,arte,rtl,tv5mon,bbck,bbcb"/>
     <!-- How many days back a search is allowed to go -->
     <Parameter name="days_back" value="28"/>
 </Context>
