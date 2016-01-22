@@ -43,7 +43,7 @@ public class GlobalData{
 
     /**
      * Sets the path to the PBCore template.
-     * @param pathToTemplate
+     * @param pathToTemplate path
      */
     public static void setPathToTemplate(String pathToTemplate) {
         GlobalData.pathToTemplate = pathToTemplate;
@@ -59,7 +59,7 @@ public class GlobalData{
 
     /**
      * Sets which channels are to be searched.
-     * @param allowedChannels
+     * @param allowedChannels list of channels
      */
     public static void setAllowedChannels(List<String> allowedChannels) {
         GlobalData.allowedChannels = allowedChannels;
