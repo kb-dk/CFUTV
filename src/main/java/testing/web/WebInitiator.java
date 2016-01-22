@@ -26,7 +26,7 @@ public class WebInitiator implements ServletContextListener {
      * Sets path to PBCore template, which channels are to be searched and how many days back.
      * Also where downloads go and the base part of the YouSee url.
      * All setup information is retrieved from the config file.
-     * @param sce
+     * @param sce servlet context event
      */
     @Override
     public void contextInitialized(ServletContextEvent sce){

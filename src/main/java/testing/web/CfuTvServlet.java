@@ -48,8 +48,8 @@ public class CfuTvServlet {
 	 * Searches the db using input and returns xml of the resulting list.
 	 * Each result has channel name, programId, startTime, endTime, title and a short description.
      * @param channel_name name for channel (mapped)
-     * @param from date
-     * @param to date
+     * @param fromInput date
+     * @param toInput date
      * @param title titel
      * @param description Kortomtale, langomtale1 eller langomtale2.
 	 * @return xml containing a list of results.
@@ -354,7 +354,8 @@ public class CfuTvServlet {
 
 	/**
 	 * Finds specific file given a filename.
-	 * @param filename wanted file, remember extensions.
+	 * @param fileName wanted file, remember extensions.
+	 * @param response servlet response
 	 * @return Output stream with file
 	 */
 	@GET
