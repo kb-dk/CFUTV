@@ -2,7 +2,6 @@ package testing.service;
 
 import dk.statsbiblioteket.digitaltv.access.model.RitzauProgram;
 import dk.statsbiblioteket.mediaplatform.ingest.model.YouSeeChannelMapping;
-import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.NotInitialiasedException;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.YouSeeChannelMappingDAO;
 import dk.statsbiblioteket.mediaplatform.ingest.model.service.ServiceException;
 import org.apache.commons.httpclient.HttpClient;
@@ -50,59 +49,49 @@ public class CfuTvService {
      * @param title Which title to search for.
      * @param description Phrase or word in description of the program. Not case sensitive.
      * @return A reduced version of a RitzauProgram containing channel name, id, start and end time, title and short description.
-     * @throws ServiceException
      */
-    public List<ReducedRitzauProgram> search(String channel_name, Date from, Date to, String title,
-                                             String description) throws ServiceException {
-        try{
-            List<RitzauProgram> fullPrograms = cfuTvDAO.search(channel_name, from, to, title, description);
-            Map<Long, ReducedRitzauProgram> resultMap = new HashMap<Long, ReducedRitzauProgram>();
-            for(RitzauProgram rp:fullPrograms){
-                if(resultMap.containsKey(rp.getProgram_id())){
+    public List<ReducedRitzauProgram> search(String channel_name, Date from, Date to, String title, String description) {
+        List<RitzauProgram> fullPrograms = cfuTvDAO.search(channel_name, from, to, title, description);
+        Map<Long, ReducedRitzauProgram> resultMap = new HashMap<Long, ReducedRitzauProgram>();
+        for(RitzauProgram rp:fullPrograms){
+            if(resultMap.containsKey(rp.getProgram_id())){
 
-                    RitzauProgram program1 = cfuTvDAO.getByFullId(resultMap.get(rp.getProgram_id()).getId());
-                    RitzauProgram program2 = cfuTvDAO.getByFullId(rp.getId());
-                    boolean tvMeterAvailableForProgram1 = compositeProgramDAO.hasTvMeter(program1);
-                    boolean tvMeterAvailableForProgram2 = compositeProgramDAO.hasTvMeter(program2);
+                RitzauProgram program1 = cfuTvDAO.getByFullId(resultMap.get(rp.getProgram_id()).getId());
+                RitzauProgram program2 = cfuTvDAO.getByFullId(rp.getId());
+                boolean tvMeterAvailableForProgram1 = compositeProgramDAO.hasTvMeter(program1);
+                boolean tvMeterAvailableForProgram2 = compositeProgramDAO.hasTvMeter(program2);
 
-                    if(tvMeterAvailableForProgram1 && tvMeterAvailableForProgram2 || !tvMeterAvailableForProgram1 && !tvMeterAvailableForProgram2){
-                        if(program1.getId() < program2.getId()){  //Choosing the one with the highest ID (newest)
-                            resultMap.put(rp.getProgram_id(), new ReducedRitzauProgram(rp.getChannel_name(),rp.getId(),rp.getStarttid(),
-                                    rp.getSluttid(),rp.getTitel(),rp.getKortomtale(), rp.getProgram_id()));
-                        }
-                    }else if(!tvMeterAvailableForProgram1 && tvMeterAvailableForProgram2){
+                if(tvMeterAvailableForProgram1 && tvMeterAvailableForProgram2 || !tvMeterAvailableForProgram1 && !tvMeterAvailableForProgram2){
+                    if(program1.getId() < program2.getId()){  //Choosing the one with the highest ID (newest)
                         resultMap.put(rp.getProgram_id(), new ReducedRitzauProgram(rp.getChannel_name(),rp.getId(),rp.getStarttid(),
                                 rp.getSluttid(),rp.getTitel(),rp.getKortomtale(), rp.getProgram_id()));
                     }
-                }else{
+                }else if(!tvMeterAvailableForProgram1 && tvMeterAvailableForProgram2){
                     resultMap.put(rp.getProgram_id(), new ReducedRitzauProgram(rp.getChannel_name(),rp.getId(),rp.getStarttid(),
                             rp.getSluttid(),rp.getTitel(),rp.getKortomtale(), rp.getProgram_id()));
                 }
+            }else{
+                resultMap.put(rp.getProgram_id(), new ReducedRitzauProgram(rp.getChannel_name(),rp.getId(),rp.getStarttid(),
+                        rp.getSluttid(),rp.getTitel(),rp.getKortomtale(), rp.getProgram_id()));
             }
-            return new ArrayList<ReducedRitzauProgram>(resultMap.values());
-        } catch(NotInitialiasedException ex){
-            throw new ServiceException(ex);
         }
+        return new ArrayList<ReducedRitzauProgram>(resultMap.values());
     }
 
     /**
      * Find a RitzauProgram in the database and uses the PBCoreGenerator to return PBCore xml of found program.
      * @param programId programId of the wanted RitzauProgram.
      * @return full PBCore xml (as defined by the template) of a RitzauProgram.
-     * @throws ServiceException
+     * @throws ServiceException if programId is null
      */
     public String getFullPost(Long programId) throws ServiceException{
         if(programId == null){
             throw new ServiceException("ProgramId is null.");
         }
-        try{
-            RitzauProgram program = cfuTvDAO.getByFullId(programId);
-            boolean tvMeterAvailable = compositeProgramDAO.hasTvMeter(program);
-            PBCoreGenerator generator = new PBCoreGenerator();
-            return generator.generateXmlFromTemplate(program,tvMeterAvailable);
-        } catch(NotInitialiasedException ex){
-            throw new ServiceException(ex);
-        }
+        RitzauProgram program = cfuTvDAO.getByFullId(programId);
+        boolean tvMeterAvailable = compositeProgramDAO.hasTvMeter(program);
+        PBCoreGenerator generator = new PBCoreGenerator();
+        return generator.generateXmlFromTemplate(program,tvMeterAvailable);
     }
 
     /**
@@ -114,17 +103,15 @@ public class CfuTvService {
      * @param offsetStart Offset from start of the program.
      * @param offsetEnd Offset from end of the program.
      * @return Status code depending on whether it was successful or not.
-     * @throws ServiceException
+     * @throws ServiceException service exception
      */
     public int getProgramSnippet(Long programId, String fileName, Date offsetStart, Date offsetEnd) throws ServiceException{
         log.info("----------------getProgramSnippet method called---------------");
         int statusCode;
         RitzauProgram program;
-        try{
+
             program = cfuTvDAO.getByFullId(programId);
-        } catch(NotInitialiasedException ex){
-            throw new ServiceException(ex);
-        }
+
         if(program == null){
             return -0; //program is null...which error code would that be?
         }
@@ -171,7 +158,7 @@ public class CfuTvService {
      * @param from Start of the cut.
      * @param to End of the cut.
      * @return Status code depending on whether it was successful or not.
-     * @throws ServiceException
+     * @throws ServiceException service exception
      */
     public int getRawCut(String sBChannelId,String fileName,Date from,Date to) throws ServiceException{
         log.info("----------------getProgramSnippet method called---------------");
@@ -187,11 +174,9 @@ public class CfuTvService {
         String fromUrlPart = dateToUrlPart(convertToUTC(from)) + "_"; //From part of the url.
         String toUrlPart = dateToUrlPart(convertToUTC(to)) + extension; //To part of the url.
         String downloadUrl = baseUrl + channelUrlPart + fromUrlPart + toUrlPart; //Putting the parts together.
-        try {
-            statusCode = downloadFileByStream(fileName, downloadUrl,null); //Actual file handling.
-        } catch(ServiceException ex){
-            throw new ServiceException(ex);
-        }
+
+        statusCode = downloadFileByStream(fileName, downloadUrl,null); //Actual file handling.
+
         return statusCode;
     }
 
@@ -240,7 +225,7 @@ public class CfuTvService {
      * @param inputUrl Url to download from.
      * @param xml Associated xml.
      * @return Status code.
-     * @throws ServiceException
+     * @throws ServiceException service exception
      */
     private int downloadFileByStream(String filename, String inputUrl, String xml) throws ServiceException{
         log.info("------------downloadFileByStream called with " + inputUrl +"--------------");
@@ -276,24 +261,19 @@ public class CfuTvService {
     /**
      * Finds and returns the YouSee equivalent of the sBChannelId input.
      * @param sBChannelId sbChannelId to be translated.
-     * @param date
+     * @param date date
      * @return YouSeeChannelId.
-     * @throws ServiceException
+     * @throws ServiceException if more than one mapping for sbChannelId is found
      */
     private String getYouSeeChannelId(String sBChannelId, Date date) throws ServiceException{
         List<YouSeeChannelMapping> mappings = null;
-        try{
-            mappings = youSeeChannelMappingDAO.getMappingsFromSbChannelId(sBChannelId, date);
-            if(mappings.size() == 1){
-                return mappings.get(0).getYouSeeChannelId();
-            } else {
-                throw new ServiceException("Expected a unique mapping for '" + sBChannelId  + "' at "
-                        + date + " but found " + mappings.size() + ".");
-            }
-        } catch (NotInitialiasedException ex) {
-            throw new ServiceException(ex);
-        } catch (ServiceException ex){
-            throw new ServiceException(ex);
+
+        mappings = youSeeChannelMappingDAO.getMappingsFromSbChannelId(sBChannelId, date);
+        if(mappings.size() == 1){
+            return mappings.get(0).getYouSeeChannelId();
+        } else {
+            throw new ServiceException("Expected a unique mapping for '" + sBChannelId  + "' at "
+                    + date + " but found " + mappings.size() + ".");
         }
     }
 
@@ -353,18 +333,16 @@ public class CfuTvService {
     /**
      * Initializes and returns a CfuTvDao.
      * @return A initialized CfuTvDao.
-     * @throws NotInitialiasedException
      */
-    private CfuTvDAO getCfuTvDao() throws NotInitialiasedException{
+    private CfuTvDAO getCfuTvDao() {
         return new CfuTvDAO(CfuTvHibernateUtil.getInitialisedFactory());
     }
 
     /**
      * Initializes and returns a YouSeeChannelMappingDAO.
      * @return A initialized YouSeeChannelMappingDAO.
-     * @throws NotInitialiasedException
      */
-    private YouSeeChannelMappingDAO getYouSeeChannelMappingDao() throws NotInitialiasedException{
+    private YouSeeChannelMappingDAO getYouSeeChannelMappingDao() {
         log.info("--------------getYouSeeChannelMappingDao() called----------------");
         return new YouSeeChannelMappingDAO(CfuTvHibernateUtil.getInitialisedFactory());
     }
@@ -372,9 +350,8 @@ public class CfuTvService {
     /**
      * Initializes and returns a CompositeProgramDAO.
      * @return A initialized CompositeProgramDAO.
-     * @throws NotInitialiasedException
      */
-    private CompositeProgramDAO getCompositeProgramDao() throws NotInitialiasedException{
+    private CompositeProgramDAO getCompositeProgramDao() {
         log.info("--------------getCompositeProgramDao() called----------------");
         return new CompositeProgramDAO(CfuTvHibernateUtil.getInitialisedFactory());
     }

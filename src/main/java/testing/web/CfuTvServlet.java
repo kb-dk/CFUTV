@@ -47,11 +47,11 @@ public class CfuTvServlet {
 	/**
 	 * Searches the db using input and returns xml of the resulting list.
 	 * Each result has channel name, programId, startTime, endTime, title and a short description.
-	 * @param channel_name
-	 * @param fromInput
-	 * @param toInput
-	 * @param title
-	 * @param description
+     * @param channel_name name for channel (mapped)
+     * @param from date
+     * @param to date
+     * @param title titel
+     * @param description Kortomtale, langomtale1 eller langomtale2.
 	 * @return xml containing a list of results.
 	 */
 	@GET
@@ -94,16 +94,13 @@ public class CfuTvServlet {
 				throw new WebApplicationException(Response.status(400).entity(result).build());
 			}
 		}
-		try{
-			return service.search(channel_name,from,to,title,description);
-		} catch(ServiceException ex){
-			throw new WebApplicationException(ex,Response.Status.INTERNAL_SERVER_ERROR);
-		}
+
+		return service.search(channel_name,from,to,title,description);
 	}
 
 	/**
 	 * Finds and returns PBCore xml metadata for a single programId.
-	 * @param programIdRaw
+	 * @param programIdRaw program id
 	 * @return PBCore xml.
 	 */
 	@GET

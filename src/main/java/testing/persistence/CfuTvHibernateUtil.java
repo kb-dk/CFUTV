@@ -60,7 +60,7 @@ public class CfuTvHibernateUtil implements HibernateUtilIF {
 
     /**
      * Gets a session factory
-     * @return
+     * @return a SessionFactory
      */
     public SessionFactory getSessionFactory() {
         return sessionFactory;

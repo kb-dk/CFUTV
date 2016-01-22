@@ -37,8 +37,8 @@ public class CompositeProgramDAO extends GenericHibernateDAO<RitzauProgram, Long
     /**
      * Returns the single CompositeProgram corresponding to the given Ritzau Program if
      * it exists or null otherwise.
-     * @param rp
-     * @return
+     * @param rp ritzauprogram to match
+     * @return a composite program if found
      */
     public CompositeProgram getCorrespondingCompositeProgram(RitzauProgram rp) {
         List<CompositeProgram> allCompositePrograms =  getSession().createQuery(

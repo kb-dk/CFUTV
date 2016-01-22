@@ -27,10 +27,10 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
 
     /**
      * Search for RitzauPrograms in the database and return a list of programs matching input data.
-     * @param channel_name
-     * @param from
-     * @param to
-     * @param title
+     * @param channel_name name for channel (mapped)
+     * @param from date
+     * @param to date
+     * @param title titel
      * @param description Kortomtale, langomtale1 eller langomtale2.
      * @return List of RitzauPrograms matching input data
      */
