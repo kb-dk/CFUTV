@@ -41,12 +41,11 @@ public class DownloadService extends Thread{
 	     }
 	     byte[] buffer = new byte[153600];
 	     int bytesRead;
-	     int totalBytesRead = 0;
+
 	     try{
 	         while((bytesRead = reader.read(buffer)) > 0){
 	             writer.write(buffer,0,bytesRead);
 	             buffer = new byte[153600];
-	             totalBytesRead += bytesRead;
 	         }
 	     } catch (IOException ex){
 	    	 log.error(ex.getMessage());

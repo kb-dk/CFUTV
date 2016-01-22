@@ -1,6 +1,5 @@
 package testing.service;
 
-import dk.statsbiblioteket.digitaltv.access.model.CompositeProgram;
 import dk.statsbiblioteket.digitaltv.access.model.RitzauProgram;
 import dk.statsbiblioteket.mediaplatform.ingest.model.YouSeeChannelMapping;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.NotInitialiasedException;
@@ -18,7 +17,6 @@ import testing.persistence.CfuTvHibernateUtil;
 import testing.persistence.CompositeProgramDAO;
 
 import java.io.*;
-import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.util.*;
 
@@ -301,7 +299,6 @@ public class CfuTvService {
 
     private Date convertToUTC(Date date){
         Locale locale = Locale.getDefault();
-        TimeZone currentTimeZone = TimeZone.getDefault();
         DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT,locale);
 
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));

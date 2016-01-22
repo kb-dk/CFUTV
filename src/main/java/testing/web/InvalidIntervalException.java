@@ -11,7 +11,11 @@ import javax.ws.rs.core.Response;
  * To change this template use File | Settings | File Templates.
  */
 public class InvalidIntervalException extends WebApplicationException {
-    private String message;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 2104646790914843847L;
+	private String message;
 
     public InvalidIntervalException() {
         super(Response.Status.BAD_REQUEST);    //To change body of overridden methods use File | Settings | File Templates.

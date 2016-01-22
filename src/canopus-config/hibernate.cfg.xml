@@ -1,49 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE hibernate-configuration PUBLIC
-         "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
-"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
-        <property name="connection.provider_class">
-            org.hibernate.connection.C3P0ConnectionProvider
-        </property>
+
+        <!-- Connection factory configuration -->
+        <property name="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+
+        <!-- TO BE CUSTOMISED PER MACHINE -->
+        <property name="hibernate.connection.url">jdbc:postgresql://digitv-devel:5432/digitaltv</property>
+        <property name="hibernate.connection.username">cfutv-ro</property>
+        <property name="hibernate.connection.password">fe7Quoos</property>
+
         <property name="hibernate.c3p0.acquire_increment">1</property>
         <property name="hibernate.c3p0.idle_test_period">100</property>
         <property name="hibernate.c3p0.max_size">100</property>
         <property name="hibernate.c3p0.max_statements">0</property>
         <property name="hibernate.c3p0.min_size">10</property>
         <property name="hibernate.c3p0.timeout">100</property>
+        
 
-        <!--
-        hsql properties
-        -->
-        <!--
-        <property name="hibernate.connection.url">jdbc:hsqldb:hsql://localhost</property>
-        <property name="hibernate.connection.driver_class">org.hsqldb.jdbcDriver</property>
-        <property name="hibernate.connection.username">sa</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.HSQLDialect</property>
-        -->
+        <!-- THIS PROPERTY MUST BE SET TO "VALIDATE" OR LEFT UNSET IN PRODUCTIONS -->
+        <property name="hibernate.hbm2ddl.auto">validate</property>
 
-        <!--
-        derby properties
-        -->
-        <!-- Connection url to database -->
-        <property name="connection.url">jdbc:postgresql://digitv-test-acs.sb.statsbiblioteket.dk:5432/digitaltv</property>
-        <!-- Username for database connection -->
-        <property name="connection.username">cfutv-ro</property>
-        <!-- Password for database connection -->
-        <property name="connection.password">fe7Quoos</property>
+
+        <!-- THESE VALUES SHOULD BE FALSE IN PRODUCTION. -->
+        <property name="hibernate.format_sql">false</property>
         <property name="hibernate.show_sql">false</property>
-        <property name="format_sql">false</property>
 
-        <property name="connection.driver_class">org.postgresql.Driver</property>
-        <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
-
-        <!-- this will show us all sql statements -->
-        <!--
-        <property name="hibernate.show_sql">true</property>
-        <property name="format_sql">true</property>
-        <property name="hbm2ddl.auto">validate</property>
-        -->
+        <property name="hibernate.cglib.use_reflection_optimizer">false</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <property name="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property>
     </session-factory>
 </hibernate-configuration>

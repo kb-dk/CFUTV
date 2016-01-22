@@ -10,7 +10,6 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import java.io.File;
 import java.util.Arrays;
-import java.util.Date;
 
 /**
  * Created with IntelliJ IDEA.

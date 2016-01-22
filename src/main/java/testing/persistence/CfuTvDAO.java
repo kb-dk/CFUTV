@@ -38,6 +38,8 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
                                       String description){
         Criteria criteria = getSession().createCriteria(RitzauProgram.class);
         List<String> list = GlobalData.getAllowedChannels();
+        Criterion isPublishable = Restrictions.eq("publishable", true);
+        criteria.add(isPublishable);
         Criterion sbChannelId = Restrictions.in("channel_name",list);
         criteria.add(sbChannelId);
         Criterion daysBack = Restrictions.ge("starttid", GlobalData.getDaysBack());

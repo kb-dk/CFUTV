@@ -1,7 +1,7 @@
 package testing.service;
 
 import dk.statsbiblioteket.digitaltv.access.model.*;
-import dk.statsbiblioteket.digitaltv.domspreingest.preingester.StringListStringPair;
+import dk.statsbiblioteket.digitaltv.exporter.utils.StringListStringPair;
 import dk.statsbiblioteket.generic.utils.FaultException;
 import dk.statsbiblioteket.util.Files;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ import java.util.regex.PatternSyntaxException;
  */
 public class PBCoreGenerator {
     private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
-    private static ProgramAdapter programAdapter = new ProgramAdapter();
+
     enum MediaType {
         UNKNOWN, VIDEO, AUDIO, SEVERAL
     }
