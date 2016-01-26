@@ -7,6 +7,7 @@ import dk.statsbiblioteket.digitaltv.access.model.RitzauProgram;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.GenericHibernateDAO;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.HibernateUtilIF;
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Restrictions;
 
@@ -23,7 +24,10 @@ public class CompositeProgramDAO extends GenericHibernateDAO<RitzauProgram, Long
     }
 
     public boolean hasTvMeter(RitzauProgram ritzauProgram){
-        Criteria criteria = getSession().createCriteria(CompositeProgram.class);
+    	Session session = null;
+    	try{
+			session = getSession();
+        Criteria criteria = session.createCriteria(CompositeProgram.class);
         Criterion criterion = Restrictions.eq("ritzauProgram", ritzauProgram);
         criteria.add(criterion);
         CompositeProgram compositeProgram = (CompositeProgram) criteria.uniqueResult();
@@ -33,6 +37,11 @@ public class CompositeProgramDAO extends GenericHibernateDAO<RitzauProgram, Long
             }
         }
         return false;
+    	}
+    	finally {
+    		if(session != null)
+    			session.close();
+    	}
     }
     /**
      * Returns the single CompositeProgram corresponding to the given Ritzau Program if
@@ -41,13 +50,23 @@ public class CompositeProgramDAO extends GenericHibernateDAO<RitzauProgram, Long
      * @return a composite program if found
      */
     public CompositeProgram getCorrespondingCompositeProgram(RitzauProgram rp) {
-        List<CompositeProgram> allCompositePrograms =  getSession().createQuery(
-                "from CompositeProgram where ritzauProgram = :rp")
-                .setParameter("rp", rp).list();
-        if (!allCompositePrograms.isEmpty()) {
-            return allCompositePrograms.get(0);
-        } else {
-            return null;
-        }
+    	Session session = null;
+    	try{
+			session = getSession();
+            @SuppressWarnings("unchecked")
+			List<CompositeProgram> allCompositePrograms = session
+					.createQuery("from CompositeProgram where ritzauProgram = :rp")
+					.setParameter("rp", rp)
+					.list();
+			if (!allCompositePrograms.isEmpty()) {
+				return allCompositePrograms.get(0);
+			} else {
+				return null;
+			}
+    	}
+    	finally {
+    		if(session != null)
+    			session.close();
+    	}
     }
 }

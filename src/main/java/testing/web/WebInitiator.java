@@ -49,8 +49,7 @@ public class WebInitiator implements ServletContextListener {
         System.out.println("------------------------------------");
         final File cfgFile = new File(cfgPath);
         log.info("Reading hibernate configuration from " + cfgFile.getAbsolutePath());
-        CfuTvHibernateUtil util = CfuTvHibernateUtil.initialiseFactory(cfgFile);
-        util.getSession();
+        CfuTvHibernateUtil.initialiseFactory(cfgFile);
 
         //PBCore template
         String templatePath = sce.getServletContext().getInitParameter("template_location");
@@ -76,6 +75,6 @@ public class WebInitiator implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce){
-
+    	CfuTvHibernateUtil.getInitialisedFactory().getSessionFactory().close();
     }
 }
