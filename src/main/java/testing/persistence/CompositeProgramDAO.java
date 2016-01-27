@@ -27,16 +27,16 @@ public class CompositeProgramDAO extends GenericHibernateDAO<RitzauProgram, Long
     	Session session = null;
     	try{
 			session = getSession();
-        Criteria criteria = session.createCriteria(CompositeProgram.class);
-        Criterion criterion = Restrictions.eq("ritzauProgram", ritzauProgram);
-        criteria.add(criterion);
-        CompositeProgram compositeProgram = (CompositeProgram) criteria.uniqueResult();
-        if(compositeProgram != null){
-            if(compositeProgram.getTvmeterProgram() != null){
-                return true;
-            }
-        }
-        return false;
+			Criteria criteria = session.createCriteria(CompositeProgram.class);
+			Criterion criterion = Restrictions.eq("ritzauProgram", ritzauProgram);
+			criteria.add(criterion);
+			CompositeProgram compositeProgram = (CompositeProgram) criteria.uniqueResult();
+			if (compositeProgram != null) {
+				if (compositeProgram.getTvmeterProgram() != null) {
+					return true;
+				}
+			}
+			return false;
     	}
     	finally {
     		if(session != null)
