@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="CFUTV:war">
-    <output-path>$PROJECT_DIR$/target</output-path>
-    <root id="archive" name="cfutv.war">
-      <element id="artifact" artifact-name="CFUTV:war exploded" />
-    </root>
-  </artifact>
-</component>
