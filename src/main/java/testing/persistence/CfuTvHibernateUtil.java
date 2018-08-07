@@ -1,6 +1,7 @@
 package testing.persistence;
 
 import dk.statsbiblioteket.digitaltv.access.model.CompositeProgram;
+import dk.statsbiblioteket.digitaltv.access.model.MirroredRitzauProgram;
 import dk.statsbiblioteket.digitaltv.access.model.RitzauProgram;
 import dk.statsbiblioteket.digitaltv.access.model.TvmeterProgram;
 import dk.statsbiblioteket.mediaplatform.ingest.model.YouSeeChannelMapping;
@@ -44,6 +45,7 @@ public class CfuTvHibernateUtil implements HibernateUtilIF {
                 if(sessionFactory == null){
                     Configuration configuration = (new Configuration()).configure(cfgFile);
                     configuration.addAnnotatedClass(RitzauProgram.class);
+                    configuration.addAnnotatedClass(MirroredRitzauProgram.class);
                     configuration.addAnnotatedClass(YouSeeChannelMapping.class);
                     configuration.addAnnotatedClass(TvmeterProgram.class);
                     configuration.addAnnotatedClass(CompositeProgram.class);
