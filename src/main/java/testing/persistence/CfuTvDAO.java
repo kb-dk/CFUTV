@@ -48,7 +48,6 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
             sb.append(" OR langomtale2 like :description)");
         }
         
-        sb.append(" ORDER BY starttid ASC");
         return sb.toString();
     }
     

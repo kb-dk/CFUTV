@@ -1,2 +1,2 @@
 CREATE VIEW cfuritzau AS
-(SELECT * FROM ritzauprogram) UNION (SELECT * FROM mirroredritzauprogram);
+(SELECT * FROM ritzauprogram) UNION ALL (SELECT * FROM mirroredritzauprogram);
