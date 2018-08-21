@@ -6,6 +6,7 @@ import dk.kb.cfutv.persistence.CfuTvDAO;
 import dk.kb.cfutv.persistence.CfuTvHibernateUtil;
 import dk.kb.cfutv.persistence.CompositeProgramDAO;
 import dk.statsbiblioteket.digitaltv.access.model.RitzauProgram;
+import dk.statsbiblioteket.digitaltv.access.model.TvmeterProgram;
 import dk.statsbiblioteket.mediaplatform.ingest.model.YouSeeChannelMapping;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.YouSeeChannelMappingDAO;
 import dk.statsbiblioteket.mediaplatform.ingest.model.service.ServiceException;
@@ -73,9 +74,19 @@ public class CfuTvService {
             throw new ServiceException("ProgramId is null.");
         }
         RitzauProgram program = cfuTvDAO.getByFullId(programId);
-        boolean tvMeterAvailable = compositeProgramDAO.hasTvMeter(program);
+        boolean tvMeterAvailable = tvmeterAvailable(program);
         PBCoreGenerator generator = new PBCoreGenerator();
         return generator.generateXmlFromTemplate(program,tvMeterAvailable);
+    }
+    
+    protected boolean tvmeterAvailable(RitzauProgram program) {
+        // TODO If tvmeter is needed this needs change
+        return false;
+    }
+    
+    protected TvmeterProgram getTvmeterProgram(RitzauProgram program) {
+        // TODO If tvmeter is needed this needs change
+        return null;
     }
 
     /**
@@ -105,9 +116,10 @@ public class CfuTvService {
         String channelUrlPart = youSeeChannelId + "_"; //ChannelId part of the url.
         Date startTid;
         Date slutTid;
-        if(compositeProgramDAO.hasTvMeter(program)){
-            startTid = convertToUTC(compositeProgramDAO.getCorrespondingCompositeProgram(program).getTvmeterProgram().getStartDate());
-            slutTid = convertToUTC(compositeProgramDAO.getCorrespondingCompositeProgram(program).getTvmeterProgram().getEndDate());
+        if(tvmeterAvailable(program)){
+            TvmeterProgram tvmeter = getTvmeterProgram(program);
+            startTid = convertToUTC(program.getStarttid());
+            slutTid = convertToUTC(program.getSluttid());
         }else{
             startTid = convertToUTC(program.getStarttid());
             slutTid = convertToUTC(program.getSluttid());
