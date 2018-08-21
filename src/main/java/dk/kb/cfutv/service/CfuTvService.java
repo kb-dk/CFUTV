@@ -51,31 +51,15 @@ public class CfuTvService {
      * @return A reduced version of a RitzauProgram containing channel name, id, start and end time, title and short description.
      */
     public List<ReducedRitzauProgram> search(String channel_name, Date from, Date to, String title, String description) {
+        ArrayList<ReducedRitzauProgram> results = new ArrayList<>();
         List<RitzauProgram> fullPrograms = cfuTvDAO.search(channel_name, from, to, title, description);
-        Map<Long, ReducedRitzauProgram> resultMap = new HashMap<Long, ReducedRitzauProgram>();
-        for(RitzauProgram rp:fullPrograms){
-            if(resultMap.containsKey(rp.getProgram_id())){
-
-                RitzauProgram program1 = cfuTvDAO.getByFullId(resultMap.get(rp.getProgram_id()).getId());
-                RitzauProgram program2 = cfuTvDAO.getByFullId(rp.getId());
-                boolean tvMeterAvailableForProgram1 = compositeProgramDAO.hasTvMeter(program1);
-                boolean tvMeterAvailableForProgram2 = compositeProgramDAO.hasTvMeter(program2);
-
-                if(tvMeterAvailableForProgram1 && tvMeterAvailableForProgram2 || !tvMeterAvailableForProgram1 && !tvMeterAvailableForProgram2){
-                    if(program1.getId() < program2.getId()){  //Choosing the one with the highest ID (newest)
-                        resultMap.put(rp.getProgram_id(), new ReducedRitzauProgram(rp.getChannel_name(),rp.getId(),rp.getStarttid(),
-                                rp.getSluttid(),rp.getTitel(),rp.getKortomtale(), rp.getProgram_id()));
-                    }
-                }else if(!tvMeterAvailableForProgram1 && tvMeterAvailableForProgram2){
-                    resultMap.put(rp.getProgram_id(), new ReducedRitzauProgram(rp.getChannel_name(),rp.getId(),rp.getStarttid(),
-                            rp.getSluttid(),rp.getTitel(),rp.getKortomtale(), rp.getProgram_id()));
-                }
-            }else{
-                resultMap.put(rp.getProgram_id(), new ReducedRitzauProgram(rp.getChannel_name(),rp.getId(),rp.getStarttid(),
-                        rp.getSluttid(),rp.getTitel(),rp.getKortomtale(), rp.getProgram_id()));
-            }
+        
+        for(RitzauProgram program : fullPrograms) {
+            results.add(new ReducedRitzauProgram(program.getChannel_name(), program.getId(), program.getStarttid(),
+                        program.getSluttid(), program.getTitel(), program.getKortomtale(), program.getProgram_id()));
         }
-        return new ArrayList<ReducedRitzauProgram>(resultMap.values());
+        
+        return results;
     }
 
     /**
