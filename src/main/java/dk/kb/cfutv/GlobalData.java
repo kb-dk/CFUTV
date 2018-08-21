@@ -1,5 +1,6 @@
 package dk.kb.cfutv;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -72,9 +73,10 @@ public class GlobalData{
      */
     public static Date getDaysBack() {
     	int daysBackInt = Integer.parseInt(daysBackRaw);
-        Date daysBack = new Date();
-        daysBack.setDate(daysBack.getDate()-daysBackInt);    	
-        return daysBack;
+    	Calendar cal = Calendar.getInstance();
+    	cal.setTime(new Date());
+    	cal.add(Calendar.DATE, -daysBackInt);
+        return cal.getTime();
     }
 
 	public static String getDaysBackRaw() {

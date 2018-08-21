@@ -33,9 +33,6 @@ public class WebInitiator implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce){
         //Logger
         String logBackPath = sce.getServletContext().getInitParameter("logback_cfg");
-        System.out.println("------------------------------------");
-        System.out.println("Logback config path: '"+logBackPath + "'");
-        System.out.println("------------------------------------");
         try{
             new LogbackConfigLoader(logBackPath);
         } catch(JoranException ex){
@@ -45,9 +42,6 @@ public class WebInitiator implements ServletContextListener {
 
         //Hibernate
         String cfgPath = sce.getServletContext().getInitParameter("hibernate_cfg");
-        System.out.println("------------------------------------");
-        System.out.println("Hibernate config path: '"+cfgPath + "'");
-        System.out.println("------------------------------------");
         final File cfgFile = new File(cfgPath);
         log.info("Reading hibernate configuration from " + cfgFile.getAbsolutePath());
         CfuTvHibernateUtil.initialiseFactory(cfgFile);
@@ -73,8 +67,9 @@ public class WebInitiator implements ServletContextListener {
         String daysBackRaw = sce.getServletContext().getInitParameter("days_back");
         GlobalData.setDaysBackRaw(daysBackRaw);
         
-        //Dirty setting of days ahead FIXME
-        GlobalData.setDaysAhead(7);
+        
+        int daysAhead = Integer.parseInt(sce.getServletContext().getInitParameter("days_ahead"));
+        GlobalData.setDaysAhead(daysAhead);
     }
 
     @Override

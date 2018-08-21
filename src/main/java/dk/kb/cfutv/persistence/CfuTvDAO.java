@@ -14,13 +14,6 @@ import dk.statsbiblioteket.digitaltv.access.model.RitzauProgram;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.GenericHibernateDAO;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.HibernateUtilIF;
 
-/**
- * Created with IntelliJ IDEA.
- * User: asj
- * Date: 16-08-12
- * Time: 11:16
- * To change this template use File | Settings | File Templates.
- */
 public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
     public CfuTvDAO(HibernateUtilIF util){
         super(RitzauProgram.class, util);
