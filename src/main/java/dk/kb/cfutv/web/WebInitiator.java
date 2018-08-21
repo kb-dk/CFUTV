@@ -35,8 +35,8 @@ public class WebInitiator implements ServletContextListener {
         String logBackPath = sce.getServletContext().getInitParameter("logback_cfg");
         try{
             new LogbackConfigLoader(logBackPath);
-        } catch(JoranException ex){
-            System.out.println(ex.getMessage() + " " + ex.getStackTrace());
+        } catch(JoranException e) {
+            throw new RuntimeException("Trouble loading logback. Expected to find logback config at path: '" + logBackPath + "'", e);
         }
         log = LoggerFactory.getLogger(WebInitiator.class);
 

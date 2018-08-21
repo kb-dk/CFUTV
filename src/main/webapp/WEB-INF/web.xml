@@ -4,13 +4,14 @@
 
     <servlet>
         <servlet-name>CFUTV-servlet</servlet-name>
-        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <servlet-class>org.apache.cxf.jaxrs.servlet.CXFNonSpringJaxrsServlet</servlet-class>
         <init-param>
-            <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>dk.kb.cfutv.web</param-value>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>dk.kb.cfutv.web.CFUTVApplication</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
+
     <servlet-mapping>
         <servlet-name>CFUTV-servlet</servlet-name>
         <url-pattern>/metadata/*</url-pattern>
@@ -19,5 +20,6 @@
     <listener>
         <listener-class>dk.kb.cfutv.web.WebInitiator</listener-class>
     </listener>
+
 
 </web-app>
