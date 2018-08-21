@@ -72,6 +72,9 @@ public class WebInitiator implements ServletContextListener {
         //Number of days back in time
         String daysBackRaw = sce.getServletContext().getInitParameter("days_back");
         GlobalData.setDaysBackRaw(daysBackRaw);
+        
+        //Dirty setting of days ahead FIXME
+        GlobalData.setDaysAhead(7);
     }
 
     @Override

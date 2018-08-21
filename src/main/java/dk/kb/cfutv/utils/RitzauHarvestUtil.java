@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import dk.kb.cfutv.GlobalData;
+
 public class RitzauHarvestUtil {
 
     private static final int RITZAU_DAY_START_HOUR = 6;
@@ -68,4 +70,11 @@ public class RitzauHarvestUtil {
         return to.before(stop) ? to : stop;
     }
     
+    public static Date getLatestAvailableDate() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.DATE, GlobalData.getDaysAhead());
+        cal.set(Calendar.HOUR_OF_DAY, RITZAU_DAY_START_HOUR);
+        return cal.getTime();
+    }
 }

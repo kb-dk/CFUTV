@@ -16,6 +16,7 @@ public class GlobalData{
     private static String youSeeAccessUrl;
     private static String downloadDestination;
     private static String daysBackRaw;
+    private static int daysAhead;
 
     public static String getDownloadDestination() {
         return downloadDestination;
@@ -79,8 +80,16 @@ public class GlobalData{
 	public static String getDaysBackRaw() {
 		return daysBackRaw;
 	}
-
+	
 	public static void setDaysBackRaw(String daysBackRaw) {
 		GlobalData.daysBackRaw = daysBackRaw;
+	}
+	
+	public static int getDaysAhead() {
+	    return daysAhead;
+	}
+	
+	public static void setDaysAhead(int days) {
+	    GlobalData.daysAhead = days;
 	}
 }
