@@ -1,4 +1,4 @@
-package testing.persistence;
+package dk.kb.cfutv.persistence;
 
 import java.util.List;
 

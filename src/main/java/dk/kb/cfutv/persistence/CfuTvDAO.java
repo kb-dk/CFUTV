@@ -1,4 +1,4 @@
-package testing.persistence;
+package dk.kb.cfutv.persistence;
 
 import java.util.Date;
 import java.util.List;
@@ -6,10 +6,10 @@ import java.util.List;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 
+import dk.kb.cfutv.GlobalData;
 import dk.statsbiblioteket.digitaltv.access.model.RitzauProgram;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.GenericHibernateDAO;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.HibernateUtilIF;
-import testing.GlobalData;
 
 /**
  * Created with IntelliJ IDEA.

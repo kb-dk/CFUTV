@@ -1,5 +1,10 @@
-package testing.service;
+package dk.kb.cfutv.service;
 
+import dk.kb.cfutv.GlobalData;
+import dk.kb.cfutv.model.ReducedRitzauProgram;
+import dk.kb.cfutv.persistence.CfuTvDAO;
+import dk.kb.cfutv.persistence.CfuTvHibernateUtil;
+import dk.kb.cfutv.persistence.CompositeProgramDAO;
 import dk.statsbiblioteket.digitaltv.access.model.RitzauProgram;
 import dk.statsbiblioteket.mediaplatform.ingest.model.YouSeeChannelMapping;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.YouSeeChannelMappingDAO;
@@ -9,11 +14,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import testing.GlobalData;
-import testing.model.ReducedRitzauProgram;
-import testing.persistence.CfuTvDAO;
-import testing.persistence.CfuTvHibernateUtil;
-import testing.persistence.CompositeProgramDAO;
 
 import java.io.*;
 import java.text.DateFormat;

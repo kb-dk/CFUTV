@@ -1,11 +1,11 @@
-package testing.service;
+package dk.kb.cfutv.service;
 
+import dk.kb.cfutv.GlobalData;
 import dk.statsbiblioteket.digitaltv.access.model.*;
 import dk.statsbiblioteket.digitaltv.exporter.utils.StringListStringPair;
 import dk.statsbiblioteket.generic.utils.FaultException;
 import dk.statsbiblioteket.util.Files;
 import org.slf4j.LoggerFactory;
-import testing.GlobalData;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package testing.web;
+package dk.kb.cfutv.web;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;

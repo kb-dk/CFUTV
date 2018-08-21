@@ -1,4 +1,4 @@
-package testing.model;
+package dk.kb.cfutv.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Date;

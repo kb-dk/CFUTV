@@ -1,4 +1,4 @@
-package testing.service;
+package dk.kb.cfutv.service;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

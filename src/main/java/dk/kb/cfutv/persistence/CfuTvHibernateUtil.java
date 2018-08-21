@@ -1,4 +1,4 @@
-package testing.persistence;
+package dk.kb.cfutv.persistence;
 
 import dk.statsbiblioteket.digitaltv.access.model.CompositeProgram;
 import dk.statsbiblioteket.digitaltv.access.model.MirroredRitzauProgram;

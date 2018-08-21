@@ -1,4 +1,4 @@
-package testing.web;
+package dk.kb.cfutv.web;
 
 import java.io.File;
 

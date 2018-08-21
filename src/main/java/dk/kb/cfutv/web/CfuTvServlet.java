@@ -1,12 +1,11 @@
-package testing.web;
+package dk.kb.cfutv.web;
 
+import dk.kb.cfutv.GlobalData;
+import dk.kb.cfutv.model.ReducedRitzauProgram;
+import dk.kb.cfutv.service.CfuTvService;
 import dk.statsbiblioteket.mediaplatform.ingest.model.service.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import testing.GlobalData;
-import testing.model.ReducedRitzauProgram;
-import testing.service.CfuTvService;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;

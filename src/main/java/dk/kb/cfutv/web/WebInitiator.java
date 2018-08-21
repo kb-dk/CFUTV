@@ -1,8 +1,9 @@
-package testing.web;
+package dk.kb.cfutv.web;
 
 import ch.qos.logback.core.joran.spi.JoranException;
-import testing.GlobalData;
-import testing.persistence.CfuTvHibernateUtil;
+import dk.kb.cfutv.GlobalData;
+import dk.kb.cfutv.persistence.CfuTvHibernateUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

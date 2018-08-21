@@ -7,7 +7,7 @@
         <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>testing.web</param-value>
+            <param-value>dk.kb.cfutv.web</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -17,7 +17,7 @@
     </servlet-mapping>
 
     <listener>
-        <listener-class>testing.web.WebInitiator</listener-class>
+        <listener-class>dk.kb.cfutv.web.WebInitiator</listener-class>
     </listener>
 
 </web-app>

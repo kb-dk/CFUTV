@@ -1,4 +1,4 @@
-package testing;
+package dk.kb.cfutv;
 
 import java.util.Date;
 import java.util.List;
