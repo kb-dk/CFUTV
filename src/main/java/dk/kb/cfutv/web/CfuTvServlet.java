@@ -97,22 +97,22 @@ public class CfuTvServlet {
 
 	/**
 	 * Finds and returns PBCore xml metadata for a single programId.
-	 * @param programIdRaw program id
+	 * @param IdRaw program id
 	 * @return PBCore xml.
 	 */
 	@GET
 	@Path("fullpost")
 	@Produces(MediaType.APPLICATION_XML)
-	public Response fullPost(@QueryParam("id") String programIdRaw){
-		if(programIdRaw == null || programIdRaw.trim().length() == 0){
+	public Response fullPost(@QueryParam("id") String IdRaw){
+		if(IdRaw == null || IdRaw.trim().length() == 0){
 			String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 			result += "<error code=\"400\">Bad Request: No id.</error>";
 			return Response.status(400).entity(result).build();
 		}
 		try{
-			Long programId = Long.parseLong(programIdRaw);
+			Long Id = Long.parseLong(IdRaw);
 			try{
-				String result = service.getFullPost(programId);
+				String result = service.getFullPost(Id);
 				log.info("----------------------FULLPOST SUCCESS--------------------");
 				if(result == null || result.trim().length() == 0){
 					result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -141,7 +141,7 @@ public class CfuTvServlet {
 	 * 409: A file with chosen filename already exists on FtpServer.
 	 * 410: Content not available.
 	 * 500: Internal server error or unexpected status code.
-	 * @param programIdRaw Id of the program.
+	 * @param IdRaw Id of the program.
 	 * @param filename Wanted filename.
 	 * @param offsetStartRaw Offset from start of the program in HH:mm:ss format.
 	 * @param offsetEndRaw Offset from end of the program in HH:mm:ss format.
@@ -150,11 +150,11 @@ public class CfuTvServlet {
 	@GET
 	@Path("programSnippet")
 	@Produces(MediaType.TEXT_PLAIN)
-	public Response programSnippet(@QueryParam("id") String programIdRaw,
+	public Response programSnippet(@QueryParam("id") String IdRaw,
 			@QueryParam("filename") String filename,
 			@QueryParam("offsetStart") String offsetStartRaw,
 			@QueryParam("offsetEnd") String offsetEndRaw){
-		if(programIdRaw == null || programIdRaw.trim().length() == 0 || filename == null || filename.trim().length() == 0){
+		if(IdRaw == null || IdRaw.trim().length() == 0 || filename == null || filename.trim().length() == 0){
 			String text = "Bad information in url. Make sure to set id, filename and offsets.";
 			log.info("-----------programSnippet first opportunity exit with 400---------------");
 			return Response.status(400).entity(text).build();
@@ -178,9 +178,9 @@ public class CfuTvServlet {
 			return Response.status(400).entity(text).build();
 		}
 		try{
-			Long programId = Long.parseLong(programIdRaw);
+			Long Id = Long.parseLong(IdRaw);
 			try{
-				int statusCode = service.getProgramSnippet(programId, filename, offsetStart, offsetEnd);
+				int statusCode = service.getProgramSnippet(Id, filename, offsetStart, offsetEnd);
 				if(statusCode == 200){
 					String text = "OK";
 					log.info("-----------programSnippet exit with 200---------------" + statusCode);

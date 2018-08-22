@@ -20,13 +20,6 @@ import java.io.*;
 import java.text.DateFormat;
 import java.util.*;
 
-/**
- * Created with IntelliJ IDEA.
- * User: asj
- * Date: 16-08-12
- * Time: 11:03
- * To change this template use File | Settings | File Templates.
- */
 public class CfuTvService {
     private Logger log;
     private CfuTvDAO cfuTvDAO;
@@ -65,15 +58,15 @@ public class CfuTvService {
 
     /**
      * Find a RitzauProgram in the database and uses the PBCoreGenerator to return PBCore xml of found program.
-     * @param programId programId of the wanted RitzauProgram.
+     * @param Id Id of the wanted RitzauProgram.
      * @return full PBCore xml (as defined by the template) of a RitzauProgram.
      * @throws ServiceException if programId is null
      */
-    public String getFullPost(Long programId) throws ServiceException{
-        if(programId == null){
-            throw new ServiceException("ProgramId is null.");
+    public String getFullPost(Long Id) throws ServiceException{
+        if(Id == null){
+            throw new ServiceException("Id is null.");
         }
-        RitzauProgram program = cfuTvDAO.getByFullId(programId);
+        RitzauProgram program = cfuTvDAO.getByFullId(Id);
         boolean tvMeterAvailable = tvmeterAvailable(program);
         PBCoreGenerator generator = new PBCoreGenerator();
         return generator.generateXmlFromTemplate(program,tvMeterAvailable);
@@ -93,19 +86,19 @@ public class CfuTvService {
      * Finds and uploads a program, based on id and offsets, to the FtpServer as a file with requested filename, along
      * with PBCore xml about the program.
      * Returns a status code depending on whether it was successful.
-     * @param programId Id of wanted program.
+     * @param Id Id of wanted program.
      * @param fileName Wanted filename.
      * @param offsetStart Offset from start of the program.
      * @param offsetEnd Offset from end of the program.
      * @return Status code depending on whether it was successful or not.
      * @throws ServiceException service exception
      */
-    public int getProgramSnippet(Long programId, String fileName, Date offsetStart, Date offsetEnd) throws ServiceException{
+    public int getProgramSnippet(Long Id, String fileName, Date offsetStart, Date offsetEnd) throws ServiceException{
         log.info("----------------getProgramSnippet method called---------------");
         int statusCode;
         RitzauProgram program;
 
-            program = cfuTvDAO.getByFullId(programId);
+            program = cfuTvDAO.getByFullId(Id);
 
         if(program == null){
             return -0; //program is null...which error code would that be?
@@ -137,7 +130,7 @@ public class CfuTvService {
         String toUrlPart = dateToUrlPart(slutTid) + extension; //To part of the url.
         String downloadUrl = baseUrl + channelUrlPart + fromUrlPart + toUrlPart; //Putting the parts together.
         try {
-            String xml = getFullPost(programId);
+            String xml = getFullPost(Id);
             statusCode = downloadFileByStream(fileName, downloadUrl, xml); //Actual file handling.
         } catch(ServiceException ex){
             throw new ServiceException(ex);
