@@ -16,7 +16,7 @@ import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 public class CFUTVApplication extends Application {
     
     public Set<Class<?>> getClasses() {
-        return new HashSet<>(Arrays.asList(CFUTV.class, JacksonJsonProvider.class));
+        return new HashSet<>(Arrays.asList(CfuTvServlet.class, JacksonJsonProvider.class));
     }
 
 }

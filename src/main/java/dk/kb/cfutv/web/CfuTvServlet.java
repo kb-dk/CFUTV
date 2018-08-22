@@ -1,19 +1,5 @@
 package dk.kb.cfutv.web;
 
-import dk.kb.cfutv.GlobalData;
-import dk.kb.cfutv.model.ReducedRitzauProgram;
-import dk.kb.cfutv.service.CfuTvService;
-import dk.statsbiblioteket.mediaplatform.ingest.model.service.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,22 +12,34 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created with IntelliJ IDEA.
- * User: asj
- * Date: 17-08-12
- * Time: 13:29
- * To change this template use File | Settings | File Templates.
- */
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import dk.kb.cfutv.GlobalData;
+import dk.kb.cfutv.model.ReducedRitzauProgram;
+import dk.kb.cfutv.service.CfuTvService;
+import dk.statsbiblioteket.mediaplatform.ingest.model.service.ServiceException;
+
 @Path("/")
 public class CfuTvServlet {
-	private Logger log;
-	private static CfuTvService service;
+    
+    private Logger log = LoggerFactory.getLogger(getClass());
+    private static CfuTvService service;
 
-	public CfuTvServlet(){
-		service = new CfuTvService();
-		log = LoggerFactory.getLogger(CfuTvServlet.class);
-	}
+    public CfuTvServlet() {
+        service = new CfuTvService();
+    }
 
 	/**
 	 * Searches the db using input and returns xml of the resulting list.
@@ -104,7 +102,7 @@ public class CfuTvServlet {
 	 */
 	@GET
 	@Path("fullpost")
-	@Produces("application/xml")
+	@Produces(MediaType.APPLICATION_XML)
 	public Response fullPost(@QueryParam("id") String programIdRaw){
 		if(programIdRaw == null || programIdRaw.trim().length() == 0){
 			String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -151,7 +149,7 @@ public class CfuTvServlet {
 	 */
 	@GET
 	@Path("programSnippet")
-	@Produces("text/plain")
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response programSnippet(@QueryParam("id") String programIdRaw,
 			@QueryParam("filename") String filename,
 			@QueryParam("offsetStart") String offsetStartRaw,
@@ -244,7 +242,7 @@ public class CfuTvServlet {
 	 */
 	@GET
 	@Path("rawCut")
-	@Produces("text/plain")
+	@Produces(MediaType.TEXT_PLAIN)
 	public Response rawCut(@QueryParam("channel") String channel,
 			@QueryParam("filename") String filename,
 			@QueryParam("from") String fromRaw,
@@ -318,7 +316,7 @@ public class CfuTvServlet {
 	 */
 	@GET
 	@Path("status")
-	@Produces("application/xml")
+	@Produces(MediaType.APPLICATION_XML)
 	public Response getStatus(@QueryParam("filename") String filename){
 		String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		if(filename == null || filename.trim().length() == 0){
@@ -359,7 +357,7 @@ public class CfuTvServlet {
 	 */
 	@GET
 	@Path("fileDownload")
-	@Produces("application/octet-stream")
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	public Response getFileFromServer(@QueryParam("filename") String fileName, @Context HttpServletResponse response){
 		ServletOutputStream out = null;
 		InputStream in = null;
@@ -400,7 +398,7 @@ public class CfuTvServlet {
 	 */
 	@GET
 	@Path("test")
-	@Produces("application/xml")
+	@Produces(MediaType.APPLICATION_XML)
 	public Response getTest(){
 		String output = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		output += "<test><methodCalledTime>" + new Date() + "</methodCalledTime>";
