@@ -24,7 +24,7 @@ public class CfuTvService {
     private Logger log;
     private CfuTvDAO cfuTvDAO;
     private YouSeeChannelMappingDAO youSeeChannelMappingDAO;
-    private CompositeProgramDAO compositeProgramDAO;
+    //private CompositeProgramDAO compositeProgramDAO;
     private String baseUrl = GlobalData.getYouSeeAccessUrl();
     private String extension = ".ts"; //extension of downloaded file, .ts chosen as it is also used in preexisting yousee stuff
 
@@ -32,7 +32,7 @@ public class CfuTvService {
         log = LoggerFactory.getLogger(CfuTvService.class);
         cfuTvDAO = getCfuTvDao();
         youSeeChannelMappingDAO = getYouSeeChannelMappingDao();
-        compositeProgramDAO = getCompositeProgramDao();
+        //compositeProgramDAO = getCompositeProgramDao();
     }
 
     /**
