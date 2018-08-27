@@ -114,12 +114,20 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
     
     private Date getEarlyDateLimitation(Date from) {
         Date earliestAllowed = GlobalData.getDaysBack();
-        return from.after(earliestAllowed) ? from : earliestAllowed;
+        if(from == null) {
+            return earliestAllowed;
+        } else {
+            return from.after(earliestAllowed) ? from : earliestAllowed;
+        }
     }
     
     private Date getLatestDateLimitation(Date to) {
         Date maxAvailable = RitzauHarvestUtil.getLatestAvailableDate();
-        return to.before(maxAvailable) ? to : maxAvailable;
+        if(to == null) {
+            return maxAvailable;
+        } else {
+            return to.before(maxAvailable) ? to : maxAvailable;
+        }
     }
     
     /**

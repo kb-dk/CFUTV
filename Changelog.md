@@ -2,6 +2,7 @@
 
 ## Version 1.8
 * Use explicit new version of channel-archiving-requester-core dependency to stop leaks of database connections
+* Fix null-pointer exception when missing to and/or from date
 
 ## Version 1.7
 * Addition of changelog
