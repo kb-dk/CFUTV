@@ -1,5 +1,8 @@
 package dk.kb.cfutv.utils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -17,64 +20,60 @@ public class RitzauHarvestUtil {
      * @param stop The end of the interval
      * @return list of HarvestTimeSlice containing the slices of time between start and stop  
      */
-    public static List<HarvestTimeSlice> createHarvestSlices(Date start, Date stop) {
-        if(start.after(stop)) {
+    public static List<HarvestTimeSlice> createHarvestSlices(ZonedDateTime start, ZonedDateTime stop) {
+        if(start.isAfter(stop)) {
             throw new IllegalStateException("Start cannot be after stop");
         }
-        
-        Calendar cal = Calendar.getInstance();
+
+        ZonedDateTime time;
+
         List<HarvestTimeSlice> slices = new ArrayList<>();
         
-        Date from;
-        Date to;
-        
+        ZonedDateTime from;
+        ZonedDateTime to;
         from = start;
         to = getFirstToDate(start, stop);
-        
         slices.add(new HarvestTimeSlice(from, to));
         
-        // Fast path if only one slice is needed. 
+        // Fast path if only one slice is needed.
         if(to.equals(stop)) {
             return slices;
         } else {
-            cal.setTime(to);    
+            time = to;
         }
-        
-        while(cal.getTime().before(stop)) {
-            from = cal.getTime();
-            cal.add(Calendar.DATE, 1);
-            to = cal.getTime();
-            if(to.after(stop)) {
+        while(time.isBefore(stop)) {
+            from = time;
+            time = time.plusDays(1);
+            to = time;
+            if(to.isAfter(stop)) {
                 to = stop;
             }
             slices.add(new HarvestTimeSlice(from, to));
         }
-        
+
         return slices;
         
     }
     
-    protected static Date getFirstToDate(Date start, Date stop) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(start);
-        Date to;
-        if(cal.get(Calendar.HOUR_OF_DAY) < RITZAU_DAY_START_HOUR) { 
-            cal.set(Calendar.HOUR_OF_DAY, RITZAU_DAY_START_HOUR);
-            to = cal.getTime();
+    protected static ZonedDateTime getFirstToDate(ZonedDateTime start, ZonedDateTime stop) {
+        ZonedDateTime to;
+        ZonedDateTime time = start;
+        if(time.getHour() < RITZAU_DAY_START_HOUR) {
+            time = time.withHour(RITZAU_DAY_START_HOUR);
+            to = time;
         } else {
-            cal.set(Calendar.HOUR_OF_DAY, RITZAU_DAY_START_HOUR);
-            cal.add(Calendar.DATE, 1);
-            to = cal.getTime();
+            time = time.withHour(RITZAU_DAY_START_HOUR);
+            time = time.plusDays(1);
+            to = time;
         }
         
-        return to.before(stop) ? to : stop;
+        return to.isBefore(stop) ? to : stop;
     }
     
-    public static Date getLatestAvailableDate() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.DATE, GlobalData.getDaysAhead());
-        cal.set(Calendar.HOUR_OF_DAY, RITZAU_DAY_START_HOUR);
-        return cal.getTime();
+    public static ZonedDateTime getLatestAvailableDate() {
+        ZonedDateTime time = ZonedDateTime.now();
+        time.plusDays(GlobalData.getDaysAhead());
+        time.plusHours(RITZAU_DAY_START_HOUR);
+        return time;
     }
 }

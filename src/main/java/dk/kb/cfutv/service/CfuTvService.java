@@ -11,20 +11,19 @@ import dk.statsbiblioteket.mediaplatform.ingest.model.YouSeeChannelMapping;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.YouSeeChannelMappingDAO;
 import dk.statsbiblioteket.mediaplatform.ingest.model.service.ServiceException;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.text.DateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public class CfuTvService {
     private Logger log;
     private CfuTvDAO cfuTvDAO;
     private YouSeeChannelMappingDAO youSeeChannelMappingDAO;
-    //private CompositeProgramDAO compositeProgramDAO;
     private String baseUrl = GlobalData.getYouSeeAccessUrl();
     private String extension = ".ts"; //extension of downloaded file, .ts chosen as it is also used in preexisting yousee stuff
 
@@ -32,7 +31,6 @@ public class CfuTvService {
         log = LoggerFactory.getLogger(CfuTvService.class);
         cfuTvDAO = getCfuTvDao();
         youSeeChannelMappingDAO = getYouSeeChannelMappingDao();
-        //compositeProgramDAO = getCompositeProgramDao();
     }
 
     /**
@@ -44,7 +42,7 @@ public class CfuTvService {
      * @param description Phrase or word in description of the program. Not case sensitive.
      * @return A reduced version of a RitzauProgram containing channel name, id, start and end time, title and short description.
      */
-    public List<ReducedRitzauProgram> search(String channel_name, Date from, Date to, String title, String description) {
+    public List<ReducedRitzauProgram> search(String channel_name, ZonedDateTime from, ZonedDateTime to, String title, String description) {
         ArrayList<ReducedRitzauProgram> results = new ArrayList<>();
         List<RitzauProgram> fullPrograms = cfuTvDAO.search(channel_name, from, to, title, description);
         
@@ -93,7 +91,7 @@ public class CfuTvService {
      * @return Status code depending on whether it was successful or not.
      * @throws ServiceException service exception
      */
-    public int getProgramSnippet(Long Id, String fileName, Date offsetStart, Date offsetEnd) throws ServiceException{
+    public int getProgramSnippet(Long Id, String fileName, ZonedDateTime offsetStart, ZonedDateTime offsetEnd) throws ServiceException{
         log.info("----------------getProgramSnippet method called---------------");
         int statusCode;
         RitzauProgram program;
@@ -104,27 +102,27 @@ public class CfuTvService {
             return -0; //program is null...which error code would that be?
         }
         String sBChannelId = program.getChannel_name();
-        String youSeeChannelId = getYouSeeChannelId(sBChannelId, program.getStarttid());
+        String youSeeChannelId = getYouSeeChannelId(sBChannelId, ZonedDateTime.ofInstant(program.getStarttid().toInstant(), ZoneId.of("Europe/Copenhagen")));
         youSeeChannelId = youSeeChannelId.replaceAll(" ","%20"); //Replace space with http equivalent
         String channelUrlPart = youSeeChannelId + "_"; //ChannelId part of the url.
-        Date startTid;
-        Date slutTid;
+        ZonedDateTime startTid;
+        ZonedDateTime slutTid;
         if(tvmeterAvailable(program)){
             TvmeterProgram tvmeter = getTvmeterProgram(program);
-            startTid = convertToUTC(program.getStarttid());
-            slutTid = convertToUTC(program.getSluttid());
+            startTid = convertToUTC(ZonedDateTime.ofInstant(program.getStarttid().toInstant(), ZoneId.of("Europe/Copenhagen")));
+            slutTid = convertToUTC(ZonedDateTime.ofInstant(program.getSluttid().toInstant(), ZoneId.of("Europe/Copenhagen")));
         }else{
-            startTid = convertToUTC(program.getStarttid());
-            slutTid = convertToUTC(program.getSluttid());
+            startTid = convertToUTC(ZonedDateTime.ofInstant(program.getStarttid().toInstant(), ZoneId.of("Europe/Copenhagen")));
+            slutTid = convertToUTC(ZonedDateTime.ofInstant(program.getSluttid().toInstant(), ZoneId.of("Europe/Copenhagen")));
         }
         //offsetting start
-        startTid.setSeconds(startTid.getSeconds() - offsetStart.getSeconds());
-        startTid.setMinutes(startTid.getMinutes() - offsetStart.getMinutes());
-        startTid.setHours(startTid.getHours() - offsetStart.getHours());
+        startTid.withSecond(startTid.getSecond() - offsetStart.getSecond());
+        startTid.withMinute(startTid.getMinute() - offsetStart.getMinute());
+        startTid.withHour(startTid.getHour() - offsetStart.getHour());
         //offsetting end
-        slutTid.setSeconds(slutTid.getSeconds() + offsetEnd.getSeconds());
-        slutTid.setMinutes(slutTid.getMinutes() + offsetEnd.getMinutes());
-        slutTid.setHours(slutTid.getHours() + offsetEnd.getHours());
+        slutTid.withSecond(slutTid.getSecond() + offsetEnd.getSecond());
+        slutTid.withMinute(slutTid.getMinute() + offsetEnd.getMinute());
+        slutTid.withHour(slutTid.getHour() + offsetEnd.getHour());
         //offsetting complete
         String fromUrlPart = dateToUrlPart(startTid) + "_"; //From part of the url.
         String toUrlPart = dateToUrlPart(slutTid) + extension; //To part of the url.
@@ -149,7 +147,7 @@ public class CfuTvService {
      * @return Status code depending on whether it was successful or not.
      * @throws ServiceException service exception
      */
-    public int getRawCut(String sBChannelId,String fileName,Date from,Date to) throws ServiceException{
+    public int getRawCut(String sBChannelId,String fileName,ZonedDateTime from,ZonedDateTime to) throws ServiceException{
         log.info("----------------getProgramSnippet method called---------------");
         int statusCode;
         String youSeeChannelId;
@@ -233,9 +231,6 @@ public class CfuTvService {
         try{
             client.executeMethod(method);
             reader = method.getResponseBodyAsStream();
-        } catch(HttpException ex){
-            method.releaseConnection(); //Not sure if this is needed here, but just to be sure.
-            throw new ServiceException(ex);
         } catch(IOException ex){
             method.releaseConnection(); //Not sure if this is needed here, but just to be sure.
             throw new ServiceException(ex);
@@ -254,10 +249,10 @@ public class CfuTvService {
      * @return YouSeeChannelId.
      * @throws ServiceException if more than one mapping for sbChannelId is found
      */
-    private String getYouSeeChannelId(String sBChannelId, Date date) throws ServiceException{
+    private String getYouSeeChannelId(String sBChannelId, ZonedDateTime date) throws ServiceException{
         List<YouSeeChannelMapping> mappings = null;
 
-        mappings = youSeeChannelMappingDAO.getMappingsFromSbChannelId(sBChannelId, date);
+        mappings = youSeeChannelMappingDAO.getMappingsFromSbChannelId(sBChannelId, Date.from(date.toInstant()));
         if(mappings.size() == 1){
             return mappings.get(0).getYouSeeChannelId();
         } else {
@@ -266,14 +261,9 @@ public class CfuTvService {
         }
     }
 
-    private Date convertToUTC(Date date){
-        Locale locale = Locale.getDefault();
-        DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT,locale);
+    private ZonedDateTime convertToUTC(ZonedDateTime date){
+        return date.withZoneSameInstant(ZoneId.of("UTC"));
 
-        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String utctime = formatter.format(date);
-        Date utcDate = new Date(utctime);
-        return utcDate;
     }
 
     /**
@@ -281,37 +271,37 @@ public class CfuTvService {
      * @param date to be translated.
      * @return String that looks like part of the url needed to access the download web page.
      */
-    private String dateToUrlPart(Date date){
+    private String dateToUrlPart(ZonedDateTime date){
         String result = "";
         //Year
         int year = date.getYear() + 1900; //Adjust for date.getYears() getting years since 1900.
         result += year;
         //Month
-        int month = date.getMonth() + 1; //Adjusting for date.getMonth() starting with 0 instead of 1.
+        int month = date.getMonthValue() + 1; //Adjusting for date.getMonth() starting with 0 instead of 1.
         if(month < 10){
             result += "0"; //Range = 1-9, so would give f.ex. 8 instead of 08, so fixing that.
         }
         result += month;
         //Day
-        int day = date.getDate();
+        int day = date.getDayOfMonth();
         if(day < 10){
             result += "0"; //Range = 1-9, so would give f.ex. 8 instead of 08, so fixing that.
         }
         result += day + "_";
         //Hour
-        int hour = date.getHours();
+        int hour = date.getHour();
         if(hour < 10){
             result += "0"; //Range = 1-9 would give f.ex. 8 instead of 08, so fixing that.
         }
         result += hour;
         //Minutes
-        int minutes = date.getMinutes();
+        int minutes = date.getMinute();
         if(minutes < 10){
             result += "0"; //Range = 1-9 would give f.ex. 8 instead of 08, so fixing that.
         }
         result += minutes;
         //Seconds
-        int seconds = date.getSeconds();
+        int seconds = date.getSecond();
         if(seconds < 10){
             result += "0"; //Range = 1-9 would give f.ex. 8 instead of 08, so fixing that.
         }

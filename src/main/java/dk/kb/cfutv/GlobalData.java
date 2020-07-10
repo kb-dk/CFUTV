@@ -1,8 +1,11 @@
 package dk.kb.cfutv;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created with IntelliJ IDEA.
@@ -71,12 +74,11 @@ public class GlobalData{
      * Returns a Date telling how many days back a search is allowed to go.
      * @return Date days back calculated every time
      */
-    public static Date getDaysBack() {
+    public static ZonedDateTime getDaysBack() {
     	int daysBackInt = Integer.parseInt(daysBackRaw);
-    	Calendar cal = Calendar.getInstance();
-    	cal.setTime(new Date());
-    	cal.add(Calendar.DATE, -daysBackInt);
-        return cal.getTime();
+        ZonedDateTime time = ZonedDateTime.now(ZoneId.of("Europe/Copenhagen"));
+    	time.minusDays(daysBackInt);
+        return time;
     }
 
 	public static String getDaysBackRaw() {

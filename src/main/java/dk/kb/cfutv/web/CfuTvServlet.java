@@ -5,12 +5,14 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -59,30 +61,16 @@ public class CfuTvServlet {
 			@QueryParam("to") String toInput,
 			@QueryParam("title") String title,
 			@QueryParam("description") String description){
-		Date from = null;
-		Date to = null;
-		DateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH:mm");
+		ZonedDateTime from = null;
+		ZonedDateTime to = null;
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
 		if(fromInput != null && fromInput.trim().length() > 0){
-			try{
-				from = format.parse(fromInput);
-			} catch(ParseException ex){
-				log.debug("Date parse error: From: " + fromInput);
-				log.debug("Date parse error stacktrace: " + ex.getStackTrace());
-				String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-				result += "<error code=\"400\">Bad Request: From could not be parsed. Use following format: yyyy-MM-dd_HH:mm</error>";
-				throw new WebApplicationException(Response.status(400).entity(result).build());
+				from = ZonedDateTime.parse(fromInput, format);
 			}
-		}
+
 		if(toInput != null && toInput.trim().length() > 0){
-			try{
-				to = format.parse(toInput);
-			} catch(ParseException ex){
-				log.debug("Date parse error: To: " + toInput);
-				log.debug("Date parse error stacktrace: " + ex.getStackTrace());
-				String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-				result += "<error code=\"400\">Bad Request: To could not be parsed. Use following format: yyyy-MM-dd_HH:mm</error>";
-				throw new WebApplicationException(Response.status(400).entity(result).build());
-			}
+			to = ZonedDateTime.parse(toInput, format);
+
 		}
 		if(from != null && to!=null){
 			if(from.compareTo(to) > 0){
@@ -159,19 +147,13 @@ public class CfuTvServlet {
 			log.info("-----------programSnippet first opportunity exit with 400---------------");
 			return Response.status(400).entity(text).build();
 		}
-		Date offsetStart = null;
-		Date offsetEnd = null;
-		if(offsetStartRaw != null && offsetStartRaw.trim().length() > 0 && offsetEndRaw != null && offsetEndRaw.trim().length() > 0){
-			DateFormat format = new SimpleDateFormat("HH:mm:ss");
-			try{
-				offsetStart = format.parse(offsetStartRaw);
-				offsetEnd = format.parse(offsetEndRaw);
-			} catch(ParseException ex){
-				log.debug("Date parse error: From: " + offsetStartRaw + " | To: " + offsetEndRaw);
-				log.debug("Date parse error stacktrace: " + ex.getStackTrace());
-				String text = "Failed to parse offsets, make sure it is of following format: HH:mm:ss";
-				return Response.status(400).entity(text).build();
-			}
+		ZonedDateTime offsetStart = null;
+		ZonedDateTime offsetEnd = null;
+		if(offsetStartRaw != null && offsetStartRaw.trim().length() > 0 && offsetEndRaw != null && offsetEndRaw.trim().length() > 0) {
+			DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
+
+			offsetStart = ZonedDateTime.parse(offsetStartRaw, format);
+			offsetEnd = ZonedDateTime.parse(offsetEndRaw, format);
 		} else {
 			String text = "Bad information in url. Make sure to set id, filename and offsets.";
 			log.info("-----------programSnippet second opportunity exit with 400---------------");
@@ -252,25 +234,25 @@ public class CfuTvServlet {
 			log.info("-----------rawCut first opportunity exit with 400---------------");
 			return Response.status(400).entity(text).build();
 		}
-		Date from = null;
-		Date to = null;
+		ZonedDateTime from = null;
+		ZonedDateTime to = null;
 		if(fromRaw != null && fromRaw.trim().length() > 0 && toRaw != null && toRaw.trim().length() > 0){
-			DateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-			try{
-				from = format.parse(fromRaw);
-				to = format.parse(toRaw);
-			} catch(ParseException ex){
-				log.debug("Date parse error: From: " + fromRaw + " | To: " + toRaw);
-				log.debug("Date parse error stacktrace: " + ex.getStackTrace());
-				String text = "Failed to parse dates, make sure it is of following format: yyyy-MM-dd_HH:mm:ss";
-				return Response.status(400).entity(text).build();
-			}
+			DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
+			//try{
+				from = ZonedDateTime.parse(fromRaw, format);
+				to = ZonedDateTime.parse(toRaw, format);
+			//} catch(ParseException ex){
+			//	log.debug("Date parse error: From: " + fromRaw + " | To: " + toRaw);
+			//	log.debug("Date parse error stacktrace: " + ex.getStackTrace());
+			//	String text = "Failed to parse dates, make sure it is of following format: yyyy-MM-dd_HH:mm:ss";
+			//	return Response.status(400).entity(text).build();
+
 		} else {
 			String text = "Bad information in url. Make sure to set channel, filename, from and to.";
 			log.info("-----------rawCut second opportunity exit with 400---------------");
 			return Response.status(400).entity(text).build();
 		}
-		if(from.after(to)){
+		if(from.isAfter(to)){
 			return Response.status(400).entity("From must be before To.").build();
 		}
 		try{
@@ -326,9 +308,9 @@ public class CfuTvServlet {
 				filename = f.getName();
 				double size = ((double) f.length()) / 1024;
 				long datetime = f.lastModified();
-				Date date = new Date(datetime);
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				String lastModified = simpleDateFormat.format(date);
+				ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(datetime), ZoneId.of("Europe/Copenhagen"));
+				DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
+				String lastModified = format.format(date);
 				result += "<file size=\"" + size + " KB\" lastModified=\"" + lastModified + "\">"+filename+"</file>";
 			}
 			result += "</files>";
@@ -341,9 +323,9 @@ public class CfuTvServlet {
 			}
 			double size = ((double) f.length()) / 1024;
 			long datetime = f.lastModified();
-			Date date = new Date(datetime);
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String lastModified = simpleDateFormat.format(date);
+			ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(datetime), ZoneId.of("Europe/Copenhagen"));
+			DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
+			String lastModified = format.format(date);
 			result += "<file size=\"" + size + " KB\" lastModified=\"" + lastModified + "\">"+filename+"</file>";
 			return Response.status(200).entity(result).build();
 		}

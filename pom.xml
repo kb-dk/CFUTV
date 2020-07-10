@@ -29,7 +29,15 @@
   </scm>
 
     <packaging>war</packaging>
-
+    <properties>
+        <!-- Specify java version here, to support forbiddenapis plugin -->
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <!-- Replace the line below with
+             <api.check.phase>none</api.check.phase>
+             to disable forbidden APIs check -->
+        <api.check.phase>process-test-classes</api.check.phase>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -167,19 +175,19 @@
         <finalName>cfutv</finalName>
         <plugins>
             <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.0</version>
                 <configuration>
                     <webXml>src\main\webapp\WEB-INF\web.xml</webXml>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
+                <configuration>
+                    <argLine>-Xmx1024m</argLine>
                 </configuration>
             </plugin>
         </plugins>

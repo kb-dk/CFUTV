@@ -1,7 +1,7 @@
 package dk.kb.cfutv.persistence;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.SQLQuery;
@@ -19,7 +19,7 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         super(RitzauProgram.class, util);
     }
 
-    protected String buildSliceSearchSQL(String channel_name, Date from, Date to, String title, String description) {
+    protected String buildSliceSearchSQL(String channel_name, ZonedDateTime from, ZonedDateTime to, String title, String description) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM mirroredritzauprogram");
         sb.append(" WHERE publishable IS TRUE"); 
@@ -53,7 +53,7 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         return sb.toString();
     }
     
-    protected void addParametersToSliceQuery(SQLQuery query, String channel_name, Date from, Date to, String title, 
+    protected void addParametersToSliceQuery(SQLQuery query, String channel_name, ZonedDateTime from, ZonedDateTime to, String title,
             String description) {
         query.setParameterList("channels", GlobalData.getAllowedChannels());
         query.setParameter("from", from);
@@ -82,11 +82,11 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
      * @return List of RitzauPrograms matching input data
      */
     @SuppressWarnings("unchecked")
-    public List<RitzauProgram> search(String channel_name, Date from, Date to, String title, String description) {
+    public List<RitzauProgram> search(String channel_name, ZonedDateTime from, ZonedDateTime to, String title, String description) {
         List<RitzauProgram> programs = new ArrayList<>();
-        
-        Date sliceFrom = getEarlyDateLimitation(from);
-        Date sliceTo = getLatestDateLimitation(to);
+
+        ZonedDateTime sliceFrom = getEarlyDateLimitation(from);
+        ZonedDateTime sliceTo = getLatestDateLimitation(to);
         
         List<HarvestTimeSlice> slices = RitzauHarvestUtil.createHarvestSlices(sliceFrom, sliceTo);
         for(HarvestTimeSlice slice : slices) {
@@ -112,21 +112,21 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         }
     }
     
-    private Date getEarlyDateLimitation(Date from) {
-        Date earliestAllowed = GlobalData.getDaysBack();
+    private ZonedDateTime getEarlyDateLimitation(ZonedDateTime from) {
+        ZonedDateTime earliestAllowed = GlobalData.getDaysBack();
         if(from == null) {
             return earliestAllowed;
         } else {
-            return from.after(earliestAllowed) ? from : earliestAllowed;
+            return from.isAfter(earliestAllowed) ? from : earliestAllowed;
         }
     }
     
-    private Date getLatestDateLimitation(Date to) {
-        Date maxAvailable = RitzauHarvestUtil.getLatestAvailableDate();
+    private ZonedDateTime getLatestDateLimitation(ZonedDateTime to) {
+        ZonedDateTime maxAvailable = RitzauHarvestUtil.getLatestAvailableDate();
         if(to == null) {
             return maxAvailable;
         } else {
-            return to.before(maxAvailable) ? to : maxAvailable;
+            return to.isBefore(maxAvailable) ? to : maxAvailable;
         }
     }
     
