@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -65,13 +66,30 @@ public class CfuTvServlet {
 		ZonedDateTime to = null;
 		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
 		if(fromInput != null && fromInput.trim().length() > 0){
+
+			try{
 				from = ZonedDateTime.parse(fromInput, format);
+			} catch(DateTimeParseException ex){
+				log.debug("Date parse error: From: " + fromInput);
+				log.debug("Date parse error stacktrace: " + ex.getStackTrace());
+				String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+				result += "<error code=\"400\">Bad Request: From could not be parsed. Use following format: yyyy-MM-dd_HH:mm</error>";
+				throw new WebApplicationException(Response.status(400).entity(result).build());
 			}
+		}
 
 		if(toInput != null && toInput.trim().length() > 0){
-			to = ZonedDateTime.parse(toInput, format);
-
+			try{
+				to = ZonedDateTime.parse(toInput, format);
+			} catch(DateTimeParseException ex){
+				log.debug("Date parse error: To: " + toInput);
+				log.debug("Date parse error stacktrace: " + ex.getStackTrace());
+				String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+				result += "<error code=\"400\">Bad Request: To could not be parsed. Use following format: yyyy-MM-dd_HH:mm</error>";
+				throw new WebApplicationException(Response.status(400).entity(result).build());
+			}
 		}
+
 		if(from != null && to!=null){
 			if(from.compareTo(to) > 0){
 				String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
@@ -152,8 +170,16 @@ public class CfuTvServlet {
 		if(offsetStartRaw != null && offsetStartRaw.trim().length() > 0 && offsetEndRaw != null && offsetEndRaw.trim().length() > 0) {
 			DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
 
-			offsetStart = ZonedDateTime.parse(offsetStartRaw, format);
-			offsetEnd = ZonedDateTime.parse(offsetEndRaw, format);
+
+			try{
+				offsetStart = ZonedDateTime.parse(offsetStartRaw, format);
+				offsetEnd = ZonedDateTime.parse(offsetEndRaw, format);
+			} catch(DateTimeParseException ex) {
+				log.debug("Date parse error: From: " + offsetStartRaw + " | To: " + offsetEndRaw);
+				log.debug("Date parse error stacktrace: " + ex.getStackTrace());
+				String text = "Failed to parse dates, make sure it is of following format: yyyy-MM-dd_HH:mm:ss";
+				return Response.status(400).entity(text).build();
+			}
 		} else {
 			String text = "Bad information in url. Make sure to set id, filename and offsets.";
 			log.info("-----------programSnippet second opportunity exit with 400---------------");
@@ -238,15 +264,15 @@ public class CfuTvServlet {
 		ZonedDateTime to = null;
 		if(fromRaw != null && fromRaw.trim().length() > 0 && toRaw != null && toRaw.trim().length() > 0){
 			DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
-			//try{
+			try{
 				from = ZonedDateTime.parse(fromRaw, format);
 				to = ZonedDateTime.parse(toRaw, format);
-			//} catch(ParseException ex){
-			//	log.debug("Date parse error: From: " + fromRaw + " | To: " + toRaw);
-			//	log.debug("Date parse error stacktrace: " + ex.getStackTrace());
-			//	String text = "Failed to parse dates, make sure it is of following format: yyyy-MM-dd_HH:mm:ss";
-			//	return Response.status(400).entity(text).build();
-
+			} catch(DateTimeParseException ex) {
+				log.debug("Date parse error: From: " + fromRaw + " | To: " + toRaw);
+				log.debug("Date parse error stacktrace: " + ex.getStackTrace());
+				String text = "Failed to parse dates, make sure it is of following format: yyyy-MM-dd_HH:mm:ss";
+				return Response.status(400).entity(text).build();
+			}
 		} else {
 			String text = "Bad information in url. Make sure to set channel, filename, from and to.";
 			log.info("-----------rawCut second opportunity exit with 400---------------");
