@@ -1,5 +1,7 @@
 package dk.kb.cfutv.persistence;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,7 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         super(RitzauProgram.class, util);
     }
 
-    protected String buildSliceSearchSQL(String channel_name, ZonedDateTime from, ZonedDateTime to, String title, String description) {
+    protected String buildSliceSearchSQL(String channel_name, Date from, Date to, String title, String description) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM mirroredritzauprogram");
         sb.append(" WHERE publishable IS TRUE"); 
@@ -53,7 +55,7 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         return sb.toString();
     }
     
-    protected void addParametersToSliceQuery(SQLQuery query, String channel_name, ZonedDateTime from, ZonedDateTime to, String title,
+    protected void addParametersToSliceQuery(SQLQuery query, String channel_name, Date from, Date to, String title,
             String description) {
         query.setParameterList("channels", GlobalData.getAllowedChannels());
         query.setParameter("from", from);
@@ -97,10 +99,14 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
     
     protected List<RitzauProgram> querySlice(String channel_name, HarvestTimeSlice slice, String title, String description) {
         Session session = null;
+
+        Date fromDate = new Date(slice.getFrom().toInstant().toEpochMilli());
+        Date toDate = new Date(slice.getFrom().toInstant().toEpochMilli());
+
         try{
             session = getSession();
-            SQLQuery query = session.createSQLQuery(buildSliceSearchSQL(channel_name, slice.getFrom(), slice.getTo(), title, description));
-            addParametersToSliceQuery(query, channel_name, slice.getFrom(), slice.getTo(), title, description);
+            SQLQuery query = session.createSQLQuery(buildSliceSearchSQL(channel_name, fromDate, toDate, title, description));
+            addParametersToSliceQuery(query, channel_name, fromDate,toDate, title, description);
             
             List<RitzauProgram> programs = query.addEntity(RitzauProgram.class).list();
                    
@@ -145,9 +151,9 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
             String sqlQuery = "SELECT * FROM mirroredritzauprogram WHERE starttid >= :starttid AND id = :id";
             SQLQuery query = session.createSQLQuery(sqlQuery);
             
-            query.setParameter("starttid", GlobalData.getDaysBack());
+            query.setParameter("starttid", new Date(GlobalData.getDaysBack().toInstant().toEpochMilli()));
             query.setParameter("id", id);
-                        
+
             RitzauProgram program = (RitzauProgram) query.addEntity(RitzauProgram.class).uniqueResult();
             return program;
         }
