@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 1.9
+Maintenance Update
+* Convert most java.util.Dates into java.time equivalents.
+* Comply with forbidden api
+* Update junit and corresponding unit tests
+* Update most external dependencies
+
 ## Version 1.8
 * Use explicit new version of channel-archiving-requester-core dependency to stop leaks of database connections
 * Fix null-pointer exception when missing to and/or from date
