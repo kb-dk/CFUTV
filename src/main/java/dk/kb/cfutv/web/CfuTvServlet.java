@@ -39,8 +39,12 @@ public class CfuTvServlet {
     
     private Logger log = LoggerFactory.getLogger(getClass());
     private static CfuTvService service;
+    ZoneId localZone = ZoneId.of("Europe/Copenhagen");
+    String yearToSecondString = "yyyy-MM-dd HH:mm:ss";
+	private DateTimeFormatter dtfBetweenYearSeconds = DateTimeFormatter.ofPattern(yearToSecondString, Locale.ROOT).withZone(localZone);
 
-    public CfuTvServlet() {
+
+	public CfuTvServlet() {
         service = new CfuTvService();
     }
 
@@ -64,7 +68,7 @@ public class CfuTvServlet {
 			@QueryParam("description") String description){
 		ZonedDateTime from = null;
 		ZonedDateTime to = null;
-		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm", Locale.ROOT).withZone(localZone);
 		if(fromInput != null && fromInput.trim().length() > 0){
 
 			try{
@@ -168,7 +172,7 @@ public class CfuTvServlet {
 		ZonedDateTime offsetStart = null;
 		ZonedDateTime offsetEnd = null;
 		if(offsetStartRaw != null && offsetStartRaw.trim().length() > 0 && offsetEndRaw != null && offsetEndRaw.trim().length() > 0) {
-			DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
+			DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm:ss", Locale.ROOT).withZone(localZone);
 
 
 			try{
@@ -263,7 +267,7 @@ public class CfuTvServlet {
 		ZonedDateTime from = null;
 		ZonedDateTime to = null;
 		if(fromRaw != null && fromRaw.trim().length() > 0 && toRaw != null && toRaw.trim().length() > 0){
-			DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
+			DateTimeFormatter format = dtfBetweenYearSeconds;
 			try{
 				from = ZonedDateTime.parse(fromRaw, format);
 				to = ZonedDateTime.parse(toRaw, format);
@@ -334,8 +338,8 @@ public class CfuTvServlet {
 				filename = f.getName();
 				double size = ((double) f.length()) / 1024;
 				long datetime = f.lastModified();
-				ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(datetime), ZoneId.of("Europe/Copenhagen"));
-				DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
+				ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(datetime), localZone);
+				DateTimeFormatter format = dtfBetweenYearSeconds;
 				String lastModified = format.format(date);
 				result += "<file size=\"" + size + " KB\" lastModified=\"" + lastModified + "\">"+filename+"</file>";
 			}
@@ -349,8 +353,8 @@ public class CfuTvServlet {
 			}
 			double size = ((double) f.length()) / 1024;
 			long datetime = f.lastModified();
-			ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(datetime), ZoneId.of("Europe/Copenhagen"));
-			DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
+			ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(datetime), localZone);
+			DateTimeFormatter format = dtfBetweenYearSeconds;
 			String lastModified = format.format(date);
 			result += "<file size=\"" + size + " KB\" lastModified=\"" + lastModified + "\">"+filename+"</file>";
 			return Response.status(200).entity(result).build();

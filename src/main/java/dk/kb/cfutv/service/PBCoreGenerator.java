@@ -28,6 +28,7 @@ import java.util.regex.PatternSyntaxException;
  */
 public class PBCoreGenerator {
     private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+    ZoneId localZone = ZoneId.of("Europe/Copenhagen");
 
     enum MediaType {
         UNKNOWN, VIDEO, AUDIO, SEVERAL
@@ -255,11 +256,11 @@ public class PBCoreGenerator {
         // This will be Ritzau data (for web-frontend reasons), not TVMeter.
         templateWorkingCopy = replaceEnclosedInCdata(templateWorkingCopy,
                 "[INSERT_PBC_START_TIME]",
-                formatDate(ZonedDateTime.ofInstant(ritzauProgram.getStarttid().toInstant(), ZoneId.of("Europe/Copenhagen"))));
+                formatDate(ZonedDateTime.ofInstant(ritzauProgram.getStarttid().toInstant(), localZone)));
         // Rather than tvmeterProgram.getStartDate()
         templateWorkingCopy = replaceEnclosedInCdata(templateWorkingCopy,
                 "[INSERT_PBC_END_TIME]",
-                formatDate(ZonedDateTime.ofInstant(ritzauProgram.getSluttid().toInstant(), ZoneId.of("Europe/Copenhagen"))));
+                formatDate(ZonedDateTime.ofInstant(ritzauProgram.getSluttid().toInstant(), localZone)));
         // Rather than tvmeterProgram.getEndDate()
 
         templateWorkingCopy = replaceEnclosedInCdata(templateWorkingCopy,
