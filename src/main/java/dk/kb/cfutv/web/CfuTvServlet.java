@@ -39,8 +39,8 @@ public class CfuTvServlet {
     
     private Logger log = LoggerFactory.getLogger(getClass());
     private static CfuTvService service;
-    ZoneId localZone = ZoneId.of("Europe/Copenhagen");
-    String yearToSecondString = "yyyy-MM-dd HH:mm:ss";
+    private static final ZoneId localZone = ZoneId.of("Europe/Copenhagen");
+	private static final String yearToSecondString = "yyyy-MM-dd HH:mm:ss";
 	private DateTimeFormatter dtfBetweenYearSeconds = DateTimeFormatter.ofPattern(yearToSecondString, Locale.ROOT).withZone(localZone);
 
 
