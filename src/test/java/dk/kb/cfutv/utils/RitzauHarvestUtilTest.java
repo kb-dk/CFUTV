@@ -1,11 +1,9 @@
 package dk.kb.cfutv.utils;
 
-
-import java.text.ParseException;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Locale;
 
@@ -27,7 +25,7 @@ public class RitzauHarvestUtilTest {
     DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm", Locale.ROOT).withZone(ZoneId.of("Europe/Copenhagen"));
     
     @Test
-    public void verySmallIntervalTest() throws ParseException {
+    public void verySmallIntervalTest() throws DateTimeParseException {
 
         ZonedDateTime start = ZonedDateTime.parse("2000-01-01T04:00", format);
         ZonedDateTime stop = ZonedDateTime.parse("2000-01-01T05:00", format);
@@ -40,7 +38,7 @@ public class RitzauHarvestUtilTest {
     }
     
     @Test
-    public void smallIntervalTest() throws ParseException {
+    public void smallIntervalTest() throws DateTimeParseException {
         ZonedDateTime start = ZonedDateTime.parse("2000-01-01T04:00", format);
         ZonedDateTime stop = ZonedDateTime.parse("2000-01-01T07:00", format);
         ZonedDateTime split = ZonedDateTime.parse("2000-01-01T06:00", format);
@@ -59,7 +57,7 @@ public class RitzauHarvestUtilTest {
     }
     
     @Test
-    public void slightlyBiggerIntervalTest() throws ParseException {
+    public void slightlyBiggerIntervalTest() throws DateTimeParseException {
         ZonedDateTime start = ZonedDateTime.parse("2000-01-01T04:00", format);
         ZonedDateTime stop = ZonedDateTime.parse("2000-01-02T05:00", format);
         ZonedDateTime split = ZonedDateTime.parse("2000-01-01T06:00", format);
@@ -77,7 +75,7 @@ public class RitzauHarvestUtilTest {
     }
     
     @Test
-    public void slightlyBiggerInterval2Test() throws ParseException {
+    public void slightlyBiggerInterval2Test() throws DateTimeParseException {
         ZonedDateTime start = ZonedDateTime.parse("2000-01-01T04:00", format);
         ZonedDateTime stop = ZonedDateTime.parse("2000-01-02T07:00", format);
         ZonedDateTime split1 = ZonedDateTime.parse("2000-01-01T06:00", format);
@@ -100,7 +98,7 @@ public class RitzauHarvestUtilTest {
     }
     
     @Test
-    public void smallPrettyIntervalTest() throws ParseException {
+    public void smallPrettyIntervalTest() throws DateTimeParseException {
         ZonedDateTime start = ZonedDateTime.parse("2000-01-01T06:00", format);
         ZonedDateTime stop = ZonedDateTime.parse("2000-01-02T06:00", format);
 
@@ -113,7 +111,7 @@ public class RitzauHarvestUtilTest {
     }
     
     @Test
-    public void prettyIntervalTest() throws ParseException {
+    public void prettyIntervalTest() throws DateTimeParseException {
         ZonedDateTime start = ZonedDateTime.parse("2000-01-01T06:00", format);
         ZonedDateTime stop = ZonedDateTime.parse("2000-01-03T06:00", format);
         ZonedDateTime split = ZonedDateTime.parse("2000-01-02T06:00", format);
@@ -132,7 +130,7 @@ public class RitzauHarvestUtilTest {
     }
     
     @Test
-    public void slightlyBiggerInterval3Test() throws ParseException {
+    public void slightlyBiggerInterval3Test() throws DateTimeParseException {
         ZonedDateTime start = ZonedDateTime.parse("2000-01-01T06:00", format);
         ZonedDateTime stop = ZonedDateTime.parse("2000-01-03T05:00", format);
         ZonedDateTime split = ZonedDateTime.parse("2000-01-02T06:00", format);
