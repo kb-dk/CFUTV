@@ -274,10 +274,10 @@ public class CfuTvService {
     private String dateToUrlPart(ZonedDateTime date){
         String result = "";
         //Year
-        int year = date.getYear() + 1900; //Adjust for date.getYears() getting years since 1900.
+        int year = date.getYear();
         result += year;
         //Month
-        int month = date.getMonthValue() + 1; //Adjusting for date.getMonth() starting with 0 instead of 1.
+        int month = date.getMonthValue(); //Adjusting for date.getMonth() starting with 0 instead of 1.
         if(month < 10){
             result += "0"; //Range = 1-9, so would give f.ex. 8 instead of 08, so fixing that.
         }
