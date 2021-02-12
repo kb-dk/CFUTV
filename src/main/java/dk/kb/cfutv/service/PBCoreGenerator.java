@@ -10,9 +10,11 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -26,6 +28,7 @@ import java.util.regex.PatternSyntaxException;
  */
 public class PBCoreGenerator {
     private final org.slf4j.Logger log = LoggerFactory.getLogger(getClass());
+    ZoneId localZone = ZoneId.of("Europe/Copenhagen");
 
     enum MediaType {
         UNKNOWN, VIDEO, AUDIO, SEVERAL
@@ -253,11 +256,11 @@ public class PBCoreGenerator {
         // This will be Ritzau data (for web-frontend reasons), not TVMeter.
         templateWorkingCopy = replaceEnclosedInCdata(templateWorkingCopy,
                 "[INSERT_PBC_START_TIME]",
-                formatDate(ritzauProgram.getStarttid()));
+                formatDate(ZonedDateTime.ofInstant(ritzauProgram.getStarttid().toInstant(), localZone)));
         // Rather than tvmeterProgram.getStartDate()
         templateWorkingCopy = replaceEnclosedInCdata(templateWorkingCopy,
                 "[INSERT_PBC_END_TIME]",
-                formatDate(ritzauProgram.getSluttid()));
+                formatDate(ZonedDateTime.ofInstant(ritzauProgram.getSluttid().toInstant(), localZone)));
         // Rather than tvmeterProgram.getEndDate()
 
         templateWorkingCopy = replaceEnclosedInCdata(templateWorkingCopy,
@@ -617,9 +620,9 @@ public class PBCoreGenerator {
      * @param date A date
      * @return The date in a string formatted in ISO 8601 format
      */
-    private static String formatDate(Date date) {
+    private static String formatDate(ZonedDateTime date) {
         SimpleDateFormat ISO8601FORMAT
-                = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
 
         return ISO8601FORMAT.format(date);
     }

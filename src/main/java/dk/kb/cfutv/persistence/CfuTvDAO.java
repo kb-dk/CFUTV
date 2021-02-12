@@ -1,7 +1,9 @@
 package dk.kb.cfutv.persistence;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.hibernate.SQLQuery;
@@ -53,7 +55,7 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         return sb.toString();
     }
     
-    protected void addParametersToSliceQuery(SQLQuery query, String channel_name, Date from, Date to, String title, 
+    protected void addParametersToSliceQuery(SQLQuery query, String channel_name, Date from, Date to, String title,
             String description) {
         query.setParameterList("channels", GlobalData.getAllowedChannels());
         query.setParameter("from", from);
@@ -82,11 +84,11 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
      * @return List of RitzauPrograms matching input data
      */
     @SuppressWarnings("unchecked")
-    public List<RitzauProgram> search(String channel_name, Date from, Date to, String title, String description) {
+    public List<RitzauProgram> search(String channel_name, ZonedDateTime from, ZonedDateTime to, String title, String description) {
         List<RitzauProgram> programs = new ArrayList<>();
-        
-        Date sliceFrom = getEarlyDateLimitation(from);
-        Date sliceTo = getLatestDateLimitation(to);
+
+        ZonedDateTime sliceFrom = getEarlyDateLimitation(from);
+        ZonedDateTime sliceTo = getLatestDateLimitation(to);
         
         List<HarvestTimeSlice> slices = RitzauHarvestUtil.createHarvestSlices(sliceFrom, sliceTo);
         for(HarvestTimeSlice slice : slices) {
@@ -97,10 +99,14 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
     
     protected List<RitzauProgram> querySlice(String channel_name, HarvestTimeSlice slice, String title, String description) {
         Session session = null;
+
+        Date fromDate = new Date(slice.getFrom().toInstant().toEpochMilli());
+        Date toDate = new Date(slice.getFrom().toInstant().toEpochMilli());
+
         try{
             session = getSession();
-            SQLQuery query = session.createSQLQuery(buildSliceSearchSQL(channel_name, slice.getFrom(), slice.getTo(), title, description));
-            addParametersToSliceQuery(query, channel_name, slice.getFrom(), slice.getTo(), title, description);
+            SQLQuery query = session.createSQLQuery(buildSliceSearchSQL(channel_name, fromDate, toDate, title, description));
+            addParametersToSliceQuery(query, channel_name, fromDate,toDate, title, description);
             
             List<RitzauProgram> programs = query.addEntity(RitzauProgram.class).list();
                    
@@ -112,21 +118,21 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         }
     }
     
-    private Date getEarlyDateLimitation(Date from) {
-        Date earliestAllowed = GlobalData.getDaysBack();
+    private ZonedDateTime getEarlyDateLimitation(ZonedDateTime from) {
+        ZonedDateTime earliestAllowed = GlobalData.getDaysBack();
         if(from == null) {
             return earliestAllowed;
         } else {
-            return from.after(earliestAllowed) ? from : earliestAllowed;
+            return from.isAfter(earliestAllowed) ? from : earliestAllowed;
         }
     }
     
-    private Date getLatestDateLimitation(Date to) {
-        Date maxAvailable = RitzauHarvestUtil.getLatestAvailableDate();
+    private ZonedDateTime getLatestDateLimitation(ZonedDateTime to) {
+        ZonedDateTime maxAvailable = RitzauHarvestUtil.getLatestAvailableDate();
         if(to == null) {
             return maxAvailable;
         } else {
-            return to.before(maxAvailable) ? to : maxAvailable;
+            return to.isBefore(maxAvailable) ? to : maxAvailable;
         }
     }
     
@@ -145,9 +151,9 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
             String sqlQuery = "SELECT * FROM mirroredritzauprogram WHERE starttid >= :starttid AND id = :id";
             SQLQuery query = session.createSQLQuery(sqlQuery);
             
-            query.setParameter("starttid", GlobalData.getDaysBack());
+            query.setParameter("starttid", new Date(GlobalData.getDaysBack().toInstant().toEpochMilli()));
             query.setParameter("id", id);
-                        
+
             RitzauProgram program = (RitzauProgram) query.addEntity(RitzauProgram.class).uniqueResult();
             return program;
         }
