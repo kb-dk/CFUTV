@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -621,9 +622,7 @@ public class PBCoreGenerator {
      * @return The date in a string formatted in ISO 8601 format
      */
     private static String formatDate(ZonedDateTime date) {
-        SimpleDateFormat ISO8601FORMAT
-                = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
-
+        DateTimeFormatter ISO8601FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT); 
         return ISO8601FORMAT.format(date);
     }
 }
