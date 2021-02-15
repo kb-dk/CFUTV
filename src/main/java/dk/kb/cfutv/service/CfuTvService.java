@@ -1,6 +1,24 @@
 package dk.kb.cfutv.service;
 
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import dk.kb.cfutv.GlobalData;
 import dk.kb.cfutv.model.ReducedRitzauProgram;
 import dk.kb.cfutv.persistence.CfuTvDAO;
@@ -11,15 +29,6 @@ import dk.statsbiblioteket.digitaltv.access.model.TvmeterProgram;
 import dk.statsbiblioteket.mediaplatform.ingest.model.YouSeeChannelMapping;
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.YouSeeChannelMappingDAO;
 import dk.statsbiblioteket.mediaplatform.ingest.model.service.ServiceException;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.*;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
 
 public class CfuTvService {
     private Logger log;
@@ -92,7 +101,7 @@ public class CfuTvService {
      * @return Status code depending on whether it was successful or not.
      * @throws ServiceException service exception
      */
-    public int getProgramSnippet(Long Id, String fileName, ZonedDateTime offsetStart, ZonedDateTime offsetEnd) throws ServiceException{
+    public int getProgramSnippet(Long Id, String fileName, Duration offsetStart, Duration offsetEnd) throws ServiceException {
         log.info("----------------getProgramSnippet method called---------------");
         int statusCode;
         RitzauProgram program;
@@ -117,13 +126,9 @@ public class CfuTvService {
             slutTid = convertToUTC(ZonedDateTime.ofInstant(program.getSluttid().toInstant(), ZoneId.of("Europe/Copenhagen")));
         }
         //offsetting start
-        startTid = startTid.withSecond(startTid.getSecond() - offsetStart.getSecond())
-                .withMinute(startTid.getMinute() - offsetStart.getMinute())
-                .withHour(startTid.getHour() - offsetStart.getHour());
+        startTid = startTid.minus(offsetStart);
         //offsetting end
-        slutTid = slutTid.withSecond(slutTid.getSecond() + offsetEnd.getSecond())
-                .withMinute(slutTid.getMinute() + offsetEnd.getMinute())
-                .withHour(slutTid.getHour() + offsetEnd.getHour());
+        slutTid = slutTid.plus(offsetEnd);
         //offsetting complete
         String fromUrlPart = dateToUrlPart(startTid) + "_"; //From part of the url.
         String toUrlPart = dateToUrlPart(slutTid) + extension; //To part of the url.
