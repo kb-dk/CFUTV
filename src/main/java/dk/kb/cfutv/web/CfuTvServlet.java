@@ -40,9 +40,6 @@ public class CfuTvServlet {
     private Logger log = LoggerFactory.getLogger(getClass());
     private static CfuTvService service;
     private static final ZoneId localZone = ZoneId.of("Europe/Copenhagen");
-	private static final String yearToSecondString = "yyyy-MM-dd HH:mm:ss";
-	private DateTimeFormatter dtfBetweenYearSeconds = DateTimeFormatter.ofPattern(yearToSecondString, Locale.ROOT).withZone(localZone);
-
 
 	public CfuTvServlet() {
         service = new CfuTvService();
@@ -68,7 +65,8 @@ public class CfuTvServlet {
 			@QueryParam("description") String description){
 		ZonedDateTime from = null;
 		ZonedDateTime to = null;
-		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm", Locale.ROOT).withZone(localZone);
+		String dateFormat = "yyyy-MM-dd_HH:mm";
+		DateTimeFormatter format = DateTimeFormatter.ofPattern(dateFormat, Locale.ROOT).withZone(localZone);
 		if(fromInput != null && fromInput.trim().length() > 0){
 
 			try{
@@ -77,7 +75,7 @@ public class CfuTvServlet {
 				log.debug("Date parse error: From: " + fromInput);
 				log.debug("Date parse error stacktrace: " + ex.getStackTrace());
 				String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-				result += "<error code=\"400\">Bad Request: From could not be parsed. Use following format: yyyy-MM-dd_HH:mm</error>";
+				result += "<error code=\"400\">Bad Request: From could not be parsed. Use following format: " + dateFormat + "</error>";
 				throw new WebApplicationException(Response.status(400).entity(result).build());
 			}
 		}
@@ -89,7 +87,7 @@ public class CfuTvServlet {
 				log.debug("Date parse error: To: " + toInput);
 				log.debug("Date parse error stacktrace: " + ex.getStackTrace());
 				String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-				result += "<error code=\"400\">Bad Request: To could not be parsed. Use following format: yyyy-MM-dd_HH:mm</error>";
+				result += "<error code=\"400\">Bad Request: To could not be parsed. Use following format: " + dateFormat + "</error>";
 				throw new WebApplicationException(Response.status(400).entity(result).build());
 			}
 		}
@@ -259,7 +257,9 @@ public class CfuTvServlet {
 	public Response rawCut(@QueryParam("channel") String channel,
 			@QueryParam("filename") String filename,
 			@QueryParam("from") String fromRaw,
-			@QueryParam("to") String toRaw){
+			@QueryParam("to") String toRaw) {
+	    String dateFormat = "yyyy-MM-dd_HH:mm:ss";
+	    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH:mm:ss", Locale.ROOT).withZone(localZone);
 		if(channel == null || channel.trim().length() == 0 || filename == null || filename.trim().length() == 0){
 			String text = "Bad information in url. Make sure to set channel, filename, from and to.";
 			log.info("-----------rawCut first opportunity exit with 400---------------");
@@ -268,14 +268,13 @@ public class CfuTvServlet {
 		ZonedDateTime from = null;
 		ZonedDateTime to = null;
 		if(fromRaw != null && fromRaw.trim().length() > 0 && toRaw != null && toRaw.trim().length() > 0){
-			DateTimeFormatter format = dtfBetweenYearSeconds;
 			try{
 				from = ZonedDateTime.parse(fromRaw, format);
 				to = ZonedDateTime.parse(toRaw, format);
 			} catch(DateTimeParseException ex) {
 				log.debug("Date parse error: From: " + fromRaw + " | To: " + toRaw);
 				log.debug("Date parse error stacktrace: " + ex.getStackTrace());
-				String text = "Failed to parse dates, make sure it is of following format: yyyy-MM-dd_HH:mm:ss";
+				String text = "Failed to parse dates, make sure it is of following format: " + dateFormat;
 				return Response.status(400).entity(text).build();
 			}
 		} else {
@@ -331,6 +330,7 @@ public class CfuTvServlet {
 	@Path("status")
 	@Produces(MediaType.APPLICATION_XML)
 	public Response getStatus(@QueryParam("filename") String filename){
+	    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT).withZone(localZone);
 		String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 		if(filename == null || filename.trim().length() == 0){
 			ArrayList<File> files = service.getStatusAll();
@@ -340,7 +340,6 @@ public class CfuTvServlet {
 				double size = ((double) f.length()) / 1024;
 				long datetime = f.lastModified();
 				ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(datetime), localZone);
-				DateTimeFormatter format = dtfBetweenYearSeconds;
 				String lastModified = format.format(date);
 				result += "<file size=\"" + size + " KB\" lastModified=\"" + lastModified + "\">"+filename+"</file>";
 			}
@@ -355,7 +354,6 @@ public class CfuTvServlet {
 			double size = ((double) f.length()) / 1024;
 			long datetime = f.lastModified();
 			ZonedDateTime date = ZonedDateTime.ofInstant(Instant.ofEpochMilli(datetime), localZone);
-			DateTimeFormatter format = dtfBetweenYearSeconds;
 			String lastModified = format.format(date);
 			result += "<file size=\"" + size + " KB\" lastModified=\"" + lastModified + "\">"+filename+"</file>";
 			return Response.status(200).entity(result).build();
