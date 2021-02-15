@@ -107,7 +107,7 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         Session session = null;
 
         Date fromDate = new Date(slice.getFrom().toInstant().toEpochMilli());
-        Date toDate = new Date(slice.getFrom().toInstant().toEpochMilli());
+        Date toDate = new Date(slice.getTo().toInstant().toEpochMilli());
 
         try{
             session = getSession();
