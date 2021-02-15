@@ -1,5 +1,6 @@
 package dk.kb.cfutv.service;
 
+import java.time.format.DateTimeFormatter;
 import dk.kb.cfutv.GlobalData;
 import dk.kb.cfutv.model.ReducedRitzauProgram;
 import dk.kb.cfutv.persistence.CfuTvDAO;
@@ -271,42 +272,9 @@ public class CfuTvService {
      * @param date to be translated.
      * @return String that looks like part of the url needed to access the download web page.
      */
-    private String dateToUrlPart(ZonedDateTime date){
-        String result = "";
-        //Year
-        int year = date.getYear();
-        result += year;
-        //Month
-        int month = date.getMonthValue(); //Adjusting for date.getMonth() starting with 0 instead of 1.
-        if(month < 10){
-            result += "0"; //Range = 1-9, so would give f.ex. 8 instead of 08, so fixing that.
-        }
-        result += month;
-        //Day
-        int day = date.getDayOfMonth();
-        if(day < 10){
-            result += "0"; //Range = 1-9, so would give f.ex. 8 instead of 08, so fixing that.
-        }
-        result += day + "_";
-        //Hour
-        int hour = date.getHour();
-        if(hour < 10){
-            result += "0"; //Range = 1-9 would give f.ex. 8 instead of 08, so fixing that.
-        }
-        result += hour;
-        //Minutes
-        int minutes = date.getMinute();
-        if(minutes < 10){
-            result += "0"; //Range = 1-9 would give f.ex. 8 instead of 08, so fixing that.
-        }
-        result += minutes;
-        //Seconds
-        int seconds = date.getSecond();
-        if(seconds < 10){
-            result += "0"; //Range = 1-9 would give f.ex. 8 instead of 08, so fixing that.
-        }
-        result += seconds;
-        return result;
+    private String dateToUrlPart(ZonedDateTime date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd'_'HHmmss", Locale.ROOT); 
+        return formatter.format(date);
     }
 
     /**
