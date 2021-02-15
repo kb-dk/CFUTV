@@ -116,13 +116,13 @@ public class CfuTvService {
             slutTid = convertToUTC(ZonedDateTime.ofInstant(program.getSluttid().toInstant(), ZoneId.of("Europe/Copenhagen")));
         }
         //offsetting start
-        startTid.withSecond(startTid.getSecond() - offsetStart.getSecond());
-        startTid.withMinute(startTid.getMinute() - offsetStart.getMinute());
-        startTid.withHour(startTid.getHour() - offsetStart.getHour());
+        startTid = startTid.withSecond(startTid.getSecond() - offsetStart.getSecond())
+                .withMinute(startTid.getMinute() - offsetStart.getMinute())
+                .withHour(startTid.getHour() - offsetStart.getHour());
         //offsetting end
-        slutTid.withSecond(slutTid.getSecond() + offsetEnd.getSecond());
-        slutTid.withMinute(slutTid.getMinute() + offsetEnd.getMinute());
-        slutTid.withHour(slutTid.getHour() + offsetEnd.getHour());
+        slutTid = slutTid.withSecond(slutTid.getSecond() + offsetEnd.getSecond())
+                .withMinute(slutTid.getMinute() + offsetEnd.getMinute())
+                .withHour(slutTid.getHour() + offsetEnd.getHour());
         //offsetting complete
         String fromUrlPart = dateToUrlPart(startTid) + "_"; //From part of the url.
         String toUrlPart = dateToUrlPart(slutTid) + extension; //To part of the url.
