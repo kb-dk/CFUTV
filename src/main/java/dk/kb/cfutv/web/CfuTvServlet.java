@@ -95,7 +95,8 @@ public class CfuTvServlet {
 		}
 
 		if(from != null && to!=null){
-			if(from.compareTo(to) > 0){
+		    log.debug("Checking dates from: '{}', to: '{}'", from, to);
+			if(from.isAfter(to)){
 				String result = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 				result += "<error code=\"400\">Bad Request: From is not before To.</error>";
 				throw new WebApplicationException(Response.status(400).entity(result).build());
