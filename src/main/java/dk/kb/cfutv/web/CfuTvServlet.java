@@ -174,7 +174,7 @@ public class CfuTvServlet {
 		Duration startOffsetDuration = null;
 		Duration endOffsetDuration = null;
 		if(offsetStartRaw != null && offsetStartRaw.trim().length() > 0 && offsetEndRaw != null && offsetEndRaw.trim().length() > 0) {
-			DateTimeFormatter format = DateTimeFormatter.ofPattern("H:mm:ss", Locale.ROOT).withZone(localZone);
+			DateTimeFormatter format = DateTimeFormatter.ofPattern("H:m:s", Locale.ROOT).withZone(localZone);
 			try{
 				offsetStart = LocalTime.parse(offsetStartRaw, format);
                 offsetEnd = LocalTime.parse(offsetEndRaw, format);
