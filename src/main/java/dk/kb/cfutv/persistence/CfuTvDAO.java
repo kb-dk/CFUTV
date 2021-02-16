@@ -8,8 +8,11 @@ import java.util.List;
 
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dk.kb.cfutv.GlobalData;
+import dk.kb.cfutv.service.CfuTvService;
 import dk.kb.cfutv.utils.HarvestTimeSlice;
 import dk.kb.cfutv.utils.RitzauHarvestUtil;
 import dk.statsbiblioteket.digitaltv.access.model.RitzauProgram;
@@ -17,6 +20,7 @@ import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.GenericHiberna
 import dk.statsbiblioteket.mediaplatform.ingest.model.persistence.HibernateUtilIF;
 
 public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
+    private Logger log = LoggerFactory.getLogger(CfuTvDAO.class);
     public CfuTvDAO(HibernateUtilIF util){
         super(RitzauProgram.class, util);
     }
@@ -90,6 +94,8 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         ZonedDateTime sliceFrom = getEarlyDateLimitation(from);
         ZonedDateTime sliceTo = getLatestDateLimitation(to);
         
+        log.debug("Calculated time slices, from: '{}', to: '{}'", sliceFrom, sliceTo);
+        
         List<HarvestTimeSlice> slices = RitzauHarvestUtil.createHarvestSlices(sliceFrom, sliceTo);
         for(HarvestTimeSlice slice : slices) {
             programs.addAll(querySlice(channel_name, slice, title, description));
@@ -101,7 +107,7 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         Session session = null;
 
         Date fromDate = new Date(slice.getFrom().toInstant().toEpochMilli());
-        Date toDate = new Date(slice.getFrom().toInstant().toEpochMilli());
+        Date toDate = new Date(slice.getTo().toInstant().toEpochMilli());
 
         try{
             session = getSession();
@@ -120,6 +126,7 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
     
     private ZonedDateTime getEarlyDateLimitation(ZonedDateTime from) {
         ZonedDateTime earliestAllowed = GlobalData.getDaysBack();
+        log.debug("earliestAllowed gives: '{}'", earliestAllowed);
         if(from == null) {
             return earliestAllowed;
         } else {

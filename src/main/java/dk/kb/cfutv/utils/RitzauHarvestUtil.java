@@ -71,9 +71,9 @@ public class RitzauHarvestUtil {
     }
     
     public static ZonedDateTime getLatestAvailableDate() {
-        ZonedDateTime time = ZonedDateTime.now();
-        time.plusDays(GlobalData.getDaysAhead());
-        time.plusHours(RITZAU_DAY_START_HOUR);
+        ZonedDateTime time = ZonedDateTime.now()
+                .plusDays(GlobalData.getDaysAhead())
+                .plusHours(RITZAU_DAY_START_HOUR);
         return time;
     }
 }

@@ -2,10 +2,7 @@ package dk.kb.cfutv;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created with IntelliJ IDEA.
@@ -76,9 +73,9 @@ public class GlobalData{
      */
     public static ZonedDateTime getDaysBack() {
     	int daysBackInt = Integer.parseInt(daysBackRaw);
-        ZonedDateTime time = ZonedDateTime.now(ZoneId.of("Europe/Copenhagen"));
-    	time.minusDays(daysBackInt);
-        return time;
+        ZonedDateTime time = ZonedDateTime.now(ZoneId.of("Europe/Copenhagen"))
+                .minusDays(daysBackInt);
+    	return time;
     }
 
 	public static String getDaysBackRaw() {
