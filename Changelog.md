@@ -2,6 +2,7 @@
 
 ## Version 1.9
 Maintenance Update
+* Switch runtime to Java 11 and Tomcat 9
 * Convert most java.util.Dates into java.time equivalents.
 * Comply with forbidden api
 * Update junit and corresponding unit tests
