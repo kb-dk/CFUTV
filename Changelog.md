@@ -1,6 +1,11 @@
 # Changelog
 
 ## Version 1.9
+Bugfix Update
+* Don't truncate to and from in search to pure dates, but preserve timestamps when querying the database
+
+
+## Version 1.9
 Maintenance Update
 * Switch runtime to Java 11 and Tomcat 9
 * Convert most java.util.Dates into java.time equivalents.
