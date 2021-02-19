@@ -1,6 +1,7 @@
 package dk.kb.cfutv.persistence;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         super(RitzauProgram.class, util);
     }
 
-    protected String buildSliceSearchSQL(String channel_name, Date from, Date to, String title, String description) {
+    protected String buildSliceSearchSQL(String channel_name, Timestamp from, Timestamp to, String title, String description) {
         StringBuilder sb = new StringBuilder();
         sb.append("SELECT * FROM mirroredritzauprogram");
         sb.append(" WHERE publishable IS TRUE"); 
@@ -59,7 +60,7 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
         return sb.toString();
     }
     
-    protected void addParametersToSliceQuery(SQLQuery query, String channel_name, Date from, Date to, String title,
+    protected void addParametersToSliceQuery(SQLQuery query, String channel_name, Timestamp from, Timestamp to, String title,
             String description) {
         query.setParameterList("channels", GlobalData.getAllowedChannels());
         query.setParameter("from", from);
@@ -106,13 +107,13 @@ public class CfuTvDAO extends GenericHibernateDAO<RitzauProgram, Long> {
     protected List<RitzauProgram> querySlice(String channel_name, HarvestTimeSlice slice, String title, String description) {
         Session session = null;
 
-        Date fromDate = new Date(slice.getFrom().toInstant().toEpochMilli());
-        Date toDate = new Date(slice.getTo().toInstant().toEpochMilli());
+        Timestamp fromDate = new Timestamp(slice.getFrom().toInstant().toEpochMilli());
+        Timestamp toDate = new Timestamp(slice.getTo().toInstant().toEpochMilli());
 
         try{
             session = getSession();
             SQLQuery query = session.createSQLQuery(buildSliceSearchSQL(channel_name, fromDate, toDate, title, description));
-            addParametersToSliceQuery(query, channel_name, fromDate,toDate, title, description);
+            addParametersToSliceQuery(query, channel_name, fromDate, toDate, title, description);
             
             List<RitzauProgram> programs = query.addEntity(RitzauProgram.class).list();
                    
