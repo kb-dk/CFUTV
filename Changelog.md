@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 1.9
+## Version 1.10
 Bugfix Update
 * Don't truncate to and from in search to pure dates, but preserve timestamps when querying the database
 
