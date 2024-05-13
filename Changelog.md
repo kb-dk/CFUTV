@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.11
+* Upgraded postgres version to 42.7.3
+
 ## Version 1.10
 Bugfix Update
 * Don't truncate to and from in search to pure dates, but preserve timestamps when querying the database
